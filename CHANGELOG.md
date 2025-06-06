@@ -20,8 +20,12 @@
 
 ### 0.0.4
 
-- Add Email OTP,
+- Add Email OTP
 - Add plugin example in readme
+
+### 0.0.5
+
+- Update readme for plugin example
 
 ### Upcoming
 

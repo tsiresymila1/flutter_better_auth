@@ -74,11 +74,10 @@ class MyApp extends StatelessWidget {
 Access BetterAuth client using `BetterAuthConsumer`:
 
 ```dart
-BetterAuthConsumer
-(
-builder: (context, client) {
-return Widget();
-}
+BetterAuthConsumer(
+  builder: (context, client) {
+    return Widget();
+  }
 )
 ```
 
@@ -91,14 +90,21 @@ final client = FlutterBetterAuth.client;
 
 ## Using plugins
 
-To use available plugin, you can import it from
+To use available plugin, you can import them like:
 
 ```dart
 import 'package:flutter_better_auth/plugins/admin/admin_plugin.dart';
 import 'package:flutter_better_auth/plugins/phone/phone_plugin.dart';
 import 'package:flutter_better_auth/plugins/email_otp/email_otp_plugin.dart';
 ```
+And now, it will be available in client. For example: 
+```dart
 
+client.phone // to access phone plugin 
+client.admin // to access admin plugin 
+client.emailOtp // to access email_otp plugin 
+
+```
 ## Full Example
 
 ```dart
