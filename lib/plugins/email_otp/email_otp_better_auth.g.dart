@@ -17,14 +17,14 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
 
   final ParseErrorLogger? errorLogger;
 
-  Future<HttpResponse<StatusResponse>> _sendVerification({
-    required OtpBody body,
+  Future<HttpResponse<SuccessResponse>> _sendVerification({
+    required EmailOtpBody body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = body;
-    final _options = _setStreamType<Result<StatusResponse>>(
+    final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -35,9 +35,9 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late StatusResponse _value;
+    late SuccessResponse _value;
     try {
-      _value = StatusResponse.fromJson(_result.data!);
+      _value = SuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -47,8 +47,10 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   }
 
   @override
-  Future<Result<StatusResponse>> sendVerification({required OtpBody body}) {
-    return BetterAuthCallAdapter<StatusResponse>().adapt(
+  Future<Result<SuccessResponse>> sendVerification({
+    required EmailOtpBody body,
+  }) {
+    return BetterAuthCallAdapter<SuccessResponse>().adapt(
       () => _sendVerification(body: body),
     );
   }
@@ -125,14 +127,14 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
     );
   }
 
-  Future<HttpResponse<StatusResponse>> _forgotPassword({
+  Future<HttpResponse<SuccessResponse>> _forgotPassword({
     required OtpBody body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = body;
-    final _options = _setStreamType<Result<StatusResponse>>(
+    final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -143,9 +145,9 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late StatusResponse _value;
+    late SuccessResponse _value;
     try {
-      _value = StatusResponse.fromJson(_result.data!);
+      _value = SuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -155,20 +157,20 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   }
 
   @override
-  Future<Result<StatusResponse>> forgotPassword({required OtpBody body}) {
-    return BetterAuthCallAdapter<StatusResponse>().adapt(
+  Future<Result<SuccessResponse>> forgotPassword({required OtpBody body}) {
+    return BetterAuthCallAdapter<SuccessResponse>().adapt(
       () => _forgotPassword(body: body),
     );
   }
 
-  Future<HttpResponse<StatusResponse>> _resetPassword({
+  Future<HttpResponse<SuccessResponse>> _resetPassword({
     required PasswordOtpBody body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = body;
-    final _options = _setStreamType<Result<StatusResponse>>(
+    final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -179,9 +181,9 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late StatusResponse _value;
+    late SuccessResponse _value;
     try {
-      _value = StatusResponse.fromJson(_result.data!);
+      _value = SuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -191,10 +193,10 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   }
 
   @override
-  Future<Result<StatusResponse>> resetPassword({
+  Future<Result<SuccessResponse>> resetPassword({
     required PasswordOtpBody body,
   }) {
-    return BetterAuthCallAdapter<StatusResponse>().adapt(
+    return BetterAuthCallAdapter<SuccessResponse>().adapt(
       () => _resetPassword(body: body),
     );
   }

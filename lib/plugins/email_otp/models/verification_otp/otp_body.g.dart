@@ -7,9 +7,8 @@ part of 'otp_body.dart';
 // **************************************************************************
 
 _OtpBody _$OtpBodyFromJson(Map<String, dynamic> json) =>
-    _OtpBody(email: json['email'] as String, type: json['type'] as String?);
+    _OtpBody(email: json['email'] as String);
 
 Map<String, dynamic> _$OtpBodyToJson(_OtpBody instance) => <String, dynamic>{
   'email': instance.email,
-  'type': instance.type,
 };

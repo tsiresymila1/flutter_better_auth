@@ -5,6 +5,7 @@ import '../../core/api/adapter.dart';
 import '../../core/api/models/result/result.dart';
 import '../../core/api/models/result/status_response.dart';
 import '../../core/api/models/session/session_response.dart';
+import '../../core/api/models/result/success_response.dart';
 import 'models/ban/ban_body.dart';
 import 'models/create_user/create_user_body.dart';
 import 'models/create_user/user_response.dart';
@@ -49,12 +50,12 @@ abstract class AdminBetterAuth {
   });
 
   @POST('/admin/revoke-user-sessions')
-  Future<Result<StatusResponse>> removeUserSessions({
+  Future<Result<SuccessResponse>> removeUserSessions({
     @Body(nullToAbsent: true) required Map<String, dynamic> body,
   });
 
   @POST('/admin/remove-user')
-  Future<Result<StatusResponse>> removeUser({
+  Future<Result<SuccessResponse>> removeUser({
     @Body(nullToAbsent: true) required BanBody body,
   });
 

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OtpBody {
 
- String get email; String? get type;
+ String get email;
 /// Create a copy of OtpBody
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $OtpBodyCopyWith<OtpBody> get copyWith => _$OtpBodyCopyWithImpl<OtpBody>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpBody&&(identical(other.email, email) || other.email == email)&&(identical(other.type, type) || other.type == type));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpBody&&(identical(other.email, email) || other.email == email));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,email,type);
+int get hashCode => Object.hash(runtimeType,email);
 
 @override
 String toString() {
-  return 'OtpBody(email: $email, type: $type)';
+  return 'OtpBody(email: $email)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $OtpBodyCopyWith<$Res>  {
   factory $OtpBodyCopyWith(OtpBody value, $Res Function(OtpBody) _then) = _$OtpBodyCopyWithImpl;
 @useResult
 $Res call({
- String email, String? type
+ String email
 });
 
 
@@ -66,11 +66,10 @@ class _$OtpBodyCopyWithImpl<$Res>
 
 /// Create a copy of OtpBody
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? type = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,
   ));
 }
 
@@ -81,11 +80,10 @@ as String?,
 @JsonSerializable()
 
 class _OtpBody implements OtpBody {
-  const _OtpBody({required this.email, this.type});
+  const _OtpBody({required this.email});
   factory _OtpBody.fromJson(Map<String, dynamic> json) => _$OtpBodyFromJson(json);
 
 @override final  String email;
-@override final  String? type;
 
 /// Create a copy of OtpBody
 /// with the given fields replaced by the non-null parameter values.
@@ -100,16 +98,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpBody&&(identical(other.email, email) || other.email == email)&&(identical(other.type, type) || other.type == type));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpBody&&(identical(other.email, email) || other.email == email));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,email,type);
+int get hashCode => Object.hash(runtimeType,email);
 
 @override
 String toString() {
-  return 'OtpBody(email: $email, type: $type)';
+  return 'OtpBody(email: $email)';
 }
 
 
@@ -120,7 +118,7 @@ abstract mixin class _$OtpBodyCopyWith<$Res> implements $OtpBodyCopyWith<$Res> {
   factory _$OtpBodyCopyWith(_OtpBody value, $Res Function(_OtpBody) _then) = __$OtpBodyCopyWithImpl;
 @override @useResult
 $Res call({
- String email, String? type
+ String email
 });
 
 
@@ -137,11 +135,10 @@ class __$OtpBodyCopyWithImpl<$Res>
 
 /// Create a copy of OtpBody
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? type = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,}) {
   return _then(_OtpBody(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,
   ));
 }
 

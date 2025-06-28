@@ -1,15 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
-import '../../../../plugins/phone/models/sign_in_phone_body.dart';
 import '../../adapter.dart';
 import '../../models/result/result.dart';
-import '../../models/session/session_response.dart';
 import 'models/email/sign_in_email_body.dart';
 import 'models/email/sign_in_email_response.dart';
 import 'models/social/sign_in_social_body.dart';
 import 'models/social/sign_in_social_response.dart';
 import 'models/username/sign_in_username_body.dart';
+import '../sign_up/models/sign_up_response/sign_up_response.dart';
 
 part 'sign_in_better_auth.g.dart';
 
@@ -37,10 +36,5 @@ abstract class SignInBetterAuth {
   });
 
   @POST('/sign-in/anonymous')
-  Future<Result<SessionResponse>> anonymous();
-
-  @POST('/sign-in/phone-number')
-  Future<Result<SessionResponse>> phoneNumber({
-    @Body(nullToAbsent: true) required SignInPhoneBody body,
-  });
+  Future<Result<SignUpResponse>> anonymous();
 }

@@ -8,7 +8,10 @@ part of 'verify_email_response.dart';
 
 _VerifyEmailResponse _$VerifyEmailResponseFromJson(Map<String, dynamic> json) =>
     _VerifyEmailResponse(
-      user: User.fromJson(json['user'] as Map<String, dynamic>),
+      user:
+          json['user'] == null
+              ? null
+              : User.fromJson(json['user'] as Map<String, dynamic>),
       status: json['status'] as bool,
       required: json['required'] as String?,
     );
@@ -16,7 +19,7 @@ _VerifyEmailResponse _$VerifyEmailResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$VerifyEmailResponseToJson(
   _VerifyEmailResponse instance,
 ) => <String, dynamic>{
-  'user': instance.user.toJson(),
+  'user': instance.user?.toJson(),
   'status': instance.status,
   'required': instance.required,
 };

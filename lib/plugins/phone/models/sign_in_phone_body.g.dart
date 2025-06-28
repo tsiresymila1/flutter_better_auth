@@ -7,7 +7,15 @@ part of 'sign_in_phone_body.dart';
 // **************************************************************************
 
 _SignInPhoneBody _$SignInPhoneBodyFromJson(Map<String, dynamic> json) =>
-    _SignInPhoneBody();
+    _SignInPhoneBody(
+      phoneNumber: json['phoneNumber'] as String,
+      password: json['password'] as String,
+      rememberMe: json['rememberMe'] as bool?,
+    );
 
 Map<String, dynamic> _$SignInPhoneBodyToJson(_SignInPhoneBody instance) =>
-    <String, dynamic>{};
+    <String, dynamic>{
+      'phoneNumber': instance.phoneNumber,
+      'password': instance.password,
+      'rememberMe': instance.rememberMe,
+    };

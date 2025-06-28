@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VerifyEmailResponse {
 
- User get user; bool get status; String? get required;
+ User? get user; bool get status; String? get required;
 /// Create a copy of VerifyEmailResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,11 +49,11 @@ abstract mixin class $VerifyEmailResponseCopyWith<$Res>  {
   factory $VerifyEmailResponseCopyWith(VerifyEmailResponse value, $Res Function(VerifyEmailResponse) _then) = _$VerifyEmailResponseCopyWithImpl;
 @useResult
 $Res call({
- User user, bool status, String? required
+ User? user, bool status, String? required
 });
 
 
-$UserCopyWith<$Res> get user;
+$UserCopyWith<$Res>? get user;
 
 }
 /// @nodoc
@@ -66,10 +66,10 @@ class _$VerifyEmailResponseCopyWithImpl<$Res>
 
 /// Create a copy of VerifyEmailResponse
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? status = null,Object? required = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? user = freezed,Object? status = null,Object? required = freezed,}) {
   return _then(_self.copyWith(
-user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as User,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as User?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as bool,required: freezed == required ? _self.required : required // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -78,9 +78,12 @@ as String?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$UserCopyWith<$Res> get user {
-  
-  return $UserCopyWith<$Res>(_self.user, (value) {
+$UserCopyWith<$Res>? get user {
+    if (_self.user == null) {
+    return null;
+  }
+
+  return $UserCopyWith<$Res>(_self.user!, (value) {
     return _then(_self.copyWith(user: value));
   });
 }
@@ -94,7 +97,7 @@ class _VerifyEmailResponse implements VerifyEmailResponse {
   const _VerifyEmailResponse({required this.user, required this.status, this.required});
   factory _VerifyEmailResponse.fromJson(Map<String, dynamic> json) => _$VerifyEmailResponseFromJson(json);
 
-@override final  User user;
+@override final  User? user;
 @override final  bool status;
 @override final  String? required;
 
@@ -131,11 +134,11 @@ abstract mixin class _$VerifyEmailResponseCopyWith<$Res> implements $VerifyEmail
   factory _$VerifyEmailResponseCopyWith(_VerifyEmailResponse value, $Res Function(_VerifyEmailResponse) _then) = __$VerifyEmailResponseCopyWithImpl;
 @override @useResult
 $Res call({
- User user, bool status, String? required
+ User? user, bool status, String? required
 });
 
 
-@override $UserCopyWith<$Res> get user;
+@override $UserCopyWith<$Res>? get user;
 
 }
 /// @nodoc
@@ -148,10 +151,10 @@ class __$VerifyEmailResponseCopyWithImpl<$Res>
 
 /// Create a copy of VerifyEmailResponse
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? status = null,Object? required = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = freezed,Object? status = null,Object? required = freezed,}) {
   return _then(_VerifyEmailResponse(
-user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as User,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as User?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as bool,required: freezed == required ? _self.required : required // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -161,9 +164,12 @@ as String?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$UserCopyWith<$Res> get user {
-  
-  return $UserCopyWith<$Res>(_self.user, (value) {
+$UserCopyWith<$Res>? get user {
+    if (_self.user == null) {
+    return null;
+  }
+
+  return $UserCopyWith<$Res>(_self.user!, (value) {
     return _then(_self.copyWith(user: value));
   });
 }

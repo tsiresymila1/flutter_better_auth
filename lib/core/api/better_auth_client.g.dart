@@ -100,7 +100,7 @@ class _BetterAuthClient implements BetterAuthClient {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/forgot-password',
+            '/forget-password',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -359,14 +359,14 @@ class _BetterAuthClient implements BetterAuthClient {
     );
   }
 
-  Future<HttpResponse<StatusResponse>> _deleteUser({
+  Future<HttpResponse<SuccessResponse>> _deleteUser({
     DeleteUserBody body = const DeleteUserBody(),
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = body;
-    final _options = _setStreamType<Result<StatusResponse>>(
+    final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -377,9 +377,9 @@ class _BetterAuthClient implements BetterAuthClient {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late StatusResponse _value;
+    late SuccessResponse _value;
     try {
-      _value = StatusResponse.fromJson(_result.data!);
+      _value = SuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -389,10 +389,10 @@ class _BetterAuthClient implements BetterAuthClient {
   }
 
   @override
-  Future<Result<StatusResponse>> deleteUser({
+  Future<Result<SuccessResponse>> deleteUser({
     DeleteUserBody body = const DeleteUserBody(),
   }) {
-    return BetterAuthCallAdapter<StatusResponse>().adapt(
+    return BetterAuthCallAdapter<SuccessResponse>().adapt(
       () => _deleteUser(body: body),
     );
   }

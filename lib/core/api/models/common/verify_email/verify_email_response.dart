@@ -9,7 +9,7 @@ part 'verify_email_response.g.dart';
 @freezed
 abstract class VerifyEmailResponse with _$VerifyEmailResponse {
   const factory VerifyEmailResponse({
-    required User user,
+    required User? user,
     required bool status,
     String? required,
   }) = _VerifyEmailResponse;

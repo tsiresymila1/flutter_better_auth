@@ -16,6 +16,7 @@ import 'models/result/status_response.dart';
 import 'models/session/session_response.dart';
 import 'models/user/delete_user/delete_user_body.dart';
 import 'models/user/update_user/update_user_body.dart';
+import 'models/result/success_response.dart';
 
 part 'better_auth_client.g.dart';
 
@@ -50,7 +51,7 @@ abstract class BetterAuthClient {
   //   @Body(nullToAbsent: true) required SignInEmailBody body,
   // });
 
-  @POST('/forgot-password')
+  @POST('/forget-password')
   Future<Result<StatusResponse>> forgotPassword({
     @Body(nullToAbsent: true) required ForgotPasswordBody body,
   });
@@ -87,7 +88,7 @@ abstract class BetterAuthClient {
   });
 
   @POST('/delete-user')
-  Future<Result<StatusResponse>> deleteUser({
+  Future<Result<SuccessResponse>> deleteUser({
     @Body(nullToAbsent: true) DeleteUserBody body = const DeleteUserBody(),
   });
 

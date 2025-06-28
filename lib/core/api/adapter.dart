@@ -21,7 +21,8 @@ class BetterAuthCallAdapter<T>
       // logger.e("Status: $status, Body: $body");
       return Result.err(
         BetterError(
-          message: res?.data?.message ?? e.message,
+          code: res?.data?['code'] ?? "ERROR",
+          message: res?.data?['message'] ?? e.message,
           stack: s.toString(),
         ),
       );

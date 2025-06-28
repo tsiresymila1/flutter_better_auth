@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserResponse {
 
- String get user;
+ User get user;
 /// Create a copy of UserResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,11 +49,11 @@ abstract mixin class $UserResponseCopyWith<$Res>  {
   factory $UserResponseCopyWith(UserResponse value, $Res Function(UserResponse) _then) = _$UserResponseCopyWithImpl;
 @useResult
 $Res call({
- String user
+ User user
 });
 
 
-
+$UserCopyWith<$Res> get user;
 
 }
 /// @nodoc
@@ -69,10 +69,19 @@ class _$UserResponseCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? user = null,}) {
   return _then(_self.copyWith(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as String,
+as User,
   ));
 }
-
+/// Create a copy of UserResponse
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res> get user {
+  
+  return $UserCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
 }
 
 
@@ -83,7 +92,7 @@ class _UserResponse implements UserResponse {
   const _UserResponse({required this.user});
   factory _UserResponse.fromJson(Map<String, dynamic> json) => _$UserResponseFromJson(json);
 
-@override final  String user;
+@override final  User user;
 
 /// Create a copy of UserResponse
 /// with the given fields replaced by the non-null parameter values.
@@ -118,11 +127,11 @@ abstract mixin class _$UserResponseCopyWith<$Res> implements $UserResponseCopyWi
   factory _$UserResponseCopyWith(_UserResponse value, $Res Function(_UserResponse) _then) = __$UserResponseCopyWithImpl;
 @override @useResult
 $Res call({
- String user
+ User user
 });
 
 
-
+@override $UserCopyWith<$Res> get user;
 
 }
 /// @nodoc
@@ -138,11 +147,20 @@ class __$UserResponseCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? user = null,}) {
   return _then(_UserResponse(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as String,
+as User,
   ));
 }
 
-
+/// Create a copy of UserResponse
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res> get user {
+  
+  return $UserCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
 }
 
 // dart format on
