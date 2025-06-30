@@ -33,7 +33,7 @@
 
 ### 0.0.7
 
-- Fix: update api response types to use correct models from [https://github.com/karuppusamy-d](Karuppusamy)
+- Fix: update api response types to use correct models from [Karuppusamy](https://github.com/karuppusamy-d)
 
 ### Upcoming
 
