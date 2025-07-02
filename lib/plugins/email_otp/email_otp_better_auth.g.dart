@@ -6,7 +6,7 @@ part of 'email_otp_better_auth.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   _EmailOtpBetterAuth(this._dio, {this.baseUrl, this.errorLogger});
@@ -18,12 +18,13 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   final ParseErrorLogger? errorLogger;
 
   Future<HttpResponse<SuccessResponse>> _sendVerification({
-    required EmailOtpBody body,
+    required String email,
+    required String type,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'email': email, 'type': type};
     final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -48,20 +49,22 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
 
   @override
   Future<Result<SuccessResponse>> sendVerification({
-    required EmailOtpBody body,
+    required String email,
+    required String type,
   }) {
     return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _sendVerification(body: body),
+      () => _sendVerification(email: email, type: type),
     );
   }
 
   Future<HttpResponse<SignUpResponse>> _verifyEmail({
-    required VerifyOtpBody body,
+    required String email,
+    required String otp,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'email': email, 'otp': otp};
     final _options = _setStreamType<Result<SignUpResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -85,19 +88,23 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   }
 
   @override
-  Future<Result<SignUpResponse>> verifyEmail({required VerifyOtpBody body}) {
+  Future<Result<SignUpResponse>> verifyEmail({
+    required String email,
+    required String otp,
+  }) {
     return BetterAuthCallAdapter<SignUpResponse>().adapt(
-      () => _verifyEmail(body: body),
+      () => _verifyEmail(email: email, otp: otp),
     );
   }
 
   Future<HttpResponse<SignUpResponse>> _signIn({
-    required VerifyOtpBody body,
+    required String email,
+    required String otp,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'email': email, 'otp': otp};
     final _options = _setStreamType<Result<SignUpResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -121,19 +128,22 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   }
 
   @override
-  Future<Result<SignUpResponse>> signIn({required VerifyOtpBody body}) {
+  Future<Result<SignUpResponse>> signIn({
+    required String email,
+    required String otp,
+  }) {
     return BetterAuthCallAdapter<SignUpResponse>().adapt(
-      () => _signIn(body: body),
+      () => _signIn(email: email, otp: otp),
     );
   }
 
   Future<HttpResponse<SuccessResponse>> _forgotPassword({
-    required OtpBody body,
+    required String email,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'email': email};
     final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -157,19 +167,25 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
   }
 
   @override
-  Future<Result<SuccessResponse>> forgotPassword({required OtpBody body}) {
+  Future<Result<SuccessResponse>> forgotPassword({required String email}) {
     return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _forgotPassword(body: body),
+      () => _forgotPassword(email: email),
     );
   }
 
   Future<HttpResponse<SuccessResponse>> _resetPassword({
-    required PasswordOtpBody body,
+    required String email,
+    required String otp,
+    required String password,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'email': email,
+      'otp': otp,
+      'password': password,
+    };
     final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -194,10 +210,12 @@ class _EmailOtpBetterAuth implements EmailOtpBetterAuth {
 
   @override
   Future<Result<SuccessResponse>> resetPassword({
-    required PasswordOtpBody body,
+    required String email,
+    required String otp,
+    required String password,
   }) {
     return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _resetPassword(body: body),
+      () => _resetPassword(email: email, otp: otp, password: password),
     );
   }
 

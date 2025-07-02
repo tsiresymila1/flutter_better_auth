@@ -33,11 +33,34 @@
 
 ### 0.0.7
 
-- Fix: update api response types to use correct models from [Karuppusamy](https://github.com/karuppusamy-d)
+- Fix: update api response types to use correct models
+  from [Karuppusamy](https://github.com/karuppusamy-d)
+
+### 0.0.8
+
+- Break changes: We change use name parameter with BodyExtra instead of Class.
+    - Before:
+  ```dart
+  final result = await client.signIn.email(
+    body: SignInEmailBody(
+      email: "test@mail.com",
+      password: "12345678",
+    ),
+  )
+  ```
+    - After
+  ```dart
+  final result = await client.signIn.email(
+    email: "test@mail.com",
+    password: "12345678",
+  );
+  ```
 
 ### Upcoming
 
 - Two-Factor Authentication
-- PassKey, One-Tap
+- PassKey
+- One-Tap
 - API Key and Organization support
 - One-time-token support
+- Etc ...

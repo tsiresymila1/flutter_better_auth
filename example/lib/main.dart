@@ -52,40 +52,28 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 FilledButton(
-                  onPressed: () {
-                    client.signIn
-                        .email(
-                          body: SignInEmailBody(
-                            email: "test@mail.com",
-                            password: "123456788",
-                          ),
-                        )
-                        .then((result) {
-                          if (result is Success<SignInEmailResponse>) {
-                            debugPrint(result.data.toString());
-                          } else {
-                            debugPrint(
-                              (result as Failure<SignInEmailResponse>)
-                                  .error
-                                  .message,
-                            );
-                          }
-                        });
+                  onPressed: () async {
+                    final result = await client.signIn.email(
+                      email: "test@mail.com",
+                      password: "123456788",
+                    );
+                    if (result.data != null) {
+                      debugPrint(result.data.toString());
+                    } else {
+                      debugPrint(result.error?.message);
+                    }
                   },
                   child: Text("Sign-in"),
                 ),
 
                 FilledButton(
-                  onPressed: () {
-                    client.getSession().then((result) {
-                      if (result is Success<SessionResponse>) {
-                        debugPrint(result.data.toString());
-                      } else {
-                        debugPrint(
-                          (result as Failure<SessionResponse>).error.message,
-                        );
-                      }
-                    });
+                  onPressed: () async {
+                    final result = await client.getSession();
+                    if (result.data != null) {
+                      debugPrint(result.data.toString());
+                    } else {
+                      debugPrint(result.error?.message);
+                    }
                   },
                   child: Text("GetSession"),
                 ),
@@ -98,11 +86,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 FilledButton(
                   onPressed: () async {
                     final res = await client.signIn.social(
-                      body: SignInSocialBody(
-                        provider: 'github',
-                        disableRedirect: true,
-                        callbackURL: 'betterapp://oauth-callback',
-                      ),
+                      provider: 'github',
+                      disableRedirect: true,
+                      callbackURL: 'betterapp://oauth-callback',
                     );
                     if (res is Success<SignInSocialResponse>) {
                       logger.i(res.data.url);
@@ -124,7 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (code != null) {
                         final callbackRes = await client.social.callback(
                           provider: 'github',
-                          body: CallbackBody(code: code, state: state),
+                          code: code,
+                          state: state,
                         );
                         logger.i(callbackRes);
                       }
@@ -161,24 +148,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
 
                 FilledButton(
-                  onPressed: () {
-                    client.signUp
-                        .email(
-                          body: SignUpBody(
-                            name: "test",
-                            email: "test@mail.com",
-                            password: "123456788",
-                          ),
-                        )
-                        .then((result) {
-                          if (result is Success<SignUpResponse>) {
-                            debugPrint(result.data.toString());
-                          } else {
-                            debugPrint(
-                              (result as Failure<SignUpResponse>).error.message,
-                            );
-                          }
-                        });
+                  onPressed: () async {
+                    final result = await client.signUp.email(
+                      name: "test",
+                      email: "test@mail.com",
+                      password: "123456788",
+                    );
+                    if (result.data != null) {
+                      debugPrint(result.data.toString());
+                    } else {
+                      debugPrint(result.error?.message);
+                    }
                   },
                   child: Text("SignUp"),
                 ),

@@ -6,7 +6,7 @@ part of 'sign_in_better_auth.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _SignInBetterAuth implements SignInBetterAuth {
   _SignInBetterAuth(this._dio, {this.baseUrl, this.errorLogger});
@@ -18,12 +18,32 @@ class _SignInBetterAuth implements SignInBetterAuth {
   final ParseErrorLogger? errorLogger;
 
   Future<HttpResponse<SignInSocialResponse>> _social({
-    required SignInSocialBody body,
+    required String provider,
+    String? callbackURL,
+    String? newUserCallbackURL,
+    String? errorCallbackURL,
+    bool? disableRedirect,
+    String? scopes,
+    SocialIdTokenBody? idToken,
+    String? requestSignUp,
+    String? loginHint,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'provider': provider,
+      'callbackURL': callbackURL,
+      'newUserCallbackURL': newUserCallbackURL,
+      'errorCallbackURL': errorCallbackURL,
+      'disableRedirect': disableRedirect,
+      'scopes': scopes,
+      'idToken': idToken,
+      'requestSignUp': requestSignUp,
+      'loginHint': loginHint,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignInSocialResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -48,20 +68,48 @@ class _SignInBetterAuth implements SignInBetterAuth {
 
   @override
   Future<Result<SignInSocialResponse>> social({
-    required SignInSocialBody body,
+    required String provider,
+    String? callbackURL,
+    String? newUserCallbackURL,
+    String? errorCallbackURL,
+    bool? disableRedirect,
+    String? scopes,
+    SocialIdTokenBody? idToken,
+    String? requestSignUp,
+    String? loginHint,
   }) {
     return BetterAuthCallAdapter<SignInSocialResponse>().adapt(
-      () => _social(body: body),
+      () => _social(
+        provider: provider,
+        callbackURL: callbackURL,
+        newUserCallbackURL: newUserCallbackURL,
+        errorCallbackURL: errorCallbackURL,
+        disableRedirect: disableRedirect,
+        scopes: scopes,
+        idToken: idToken,
+        requestSignUp: requestSignUp,
+        loginHint: loginHint,
+      ),
     );
   }
 
   Future<HttpResponse<SignInEmailResponse>> _email({
-    required SignInEmailBody body,
+    required String email,
+    required String password,
+    String? callbackURL,
+    String? rememberMe,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'email': email,
+      'password': password,
+      'callbackURL': callbackURL,
+      'rememberMe': rememberMe,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignInEmailResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -85,19 +133,37 @@ class _SignInBetterAuth implements SignInBetterAuth {
   }
 
   @override
-  Future<Result<SignInEmailResponse>> email({required SignInEmailBody body}) {
+  Future<Result<SignInEmailResponse>> email({
+    required String email,
+    required String password,
+    String? callbackURL,
+    String? rememberMe,
+  }) {
     return BetterAuthCallAdapter<SignInEmailResponse>().adapt(
-      () => _email(body: body),
+      () => _email(
+        email: email,
+        password: password,
+        callbackURL: callbackURL,
+        rememberMe: rememberMe,
+      ),
     );
   }
 
   Future<HttpResponse<SignInEmailResponse>> _username({
-    required SignInUsernameBody body,
+    required String username,
+    required String password,
+    String? rememberMe,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'username': username,
+      'password': password,
+      'rememberMe': rememberMe,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignInEmailResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -122,10 +188,16 @@ class _SignInBetterAuth implements SignInBetterAuth {
 
   @override
   Future<Result<SignInEmailResponse>> username({
-    required SignInUsernameBody body,
+    required String username,
+    required String password,
+    String? rememberMe,
   }) {
     return BetterAuthCallAdapter<SignInEmailResponse>().adapt(
-      () => _username(body: body),
+      () => _username(
+        username: username,
+        password: password,
+        rememberMe: rememberMe,
+      ),
     );
   }
 

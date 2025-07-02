@@ -6,7 +6,7 @@ part of 'sign_up_better_auth.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _SignUpBetterAuth implements SignUpBetterAuth {
   _SignUpBetterAuth(this._dio, {this.baseUrl, this.errorLogger});
@@ -18,12 +18,22 @@ class _SignUpBetterAuth implements SignUpBetterAuth {
   final ParseErrorLogger? errorLogger;
 
   Future<HttpResponse<SignUpResponse>> _email({
-    required SignUpBody body,
+    required String name,
+    required String email,
+    required String password,
+    String? callbackURL,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'name': name,
+      'email': email,
+      'password': password,
+      'callbackURL': callbackURL,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignUpResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -47,9 +57,19 @@ class _SignUpBetterAuth implements SignUpBetterAuth {
   }
 
   @override
-  Future<Result<SignUpResponse>> email({required SignUpBody body}) {
+  Future<Result<SignUpResponse>> email({
+    required String name,
+    required String email,
+    required String password,
+    String? callbackURL,
+  }) {
     return BetterAuthCallAdapter<SignUpResponse>().adapt(
-      () => _email(body: body),
+      () => _email(
+        name: name,
+        email: email,
+        password: password,
+        callbackURL: callbackURL,
+      ),
     );
   }
 

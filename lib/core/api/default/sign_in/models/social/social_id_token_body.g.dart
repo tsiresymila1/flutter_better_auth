@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'social_id_token.dart';
+part of 'social_id_token_body.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_SocialIdToken _$SocialIdTokenFromJson(Map<String, dynamic> json) =>
-    _SocialIdToken(
+_SocialIdTokenBody _$SocialIdTokenBodyFromJson(Map<String, dynamic> json) =>
+    _SocialIdTokenBody(
       token: json['token'] as String,
       nonce: json['nonce'] as String?,
       accessToken: json['accessToken'] as String?,
@@ -15,7 +15,7 @@ _SocialIdToken _$SocialIdTokenFromJson(Map<String, dynamic> json) =>
       expiresAt: (json['expiresAt'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$SocialIdTokenToJson(_SocialIdToken instance) =>
+Map<String, dynamic> _$SocialIdTokenBodyToJson(_SocialIdTokenBody instance) =>
     <String, dynamic>{
       'token': instance.token,
       'nonce': instance.nonce,

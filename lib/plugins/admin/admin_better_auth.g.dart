@@ -6,7 +6,7 @@ part of 'admin_better_auth.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _AdminBetterAuth implements AdminBetterAuth {
   _AdminBetterAuth(this._dio, {this.baseUrl, this.errorLogger});
@@ -18,12 +18,13 @@ class _AdminBetterAuth implements AdminBetterAuth {
   final ParseErrorLogger? errorLogger;
 
   Future<HttpResponse<UserResponse>> _setRole({
-    required SetRoleBody body,
+    required String userId,
+    required String role,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'userId': userId, 'role': role};
     final _options = _setStreamType<Result<UserResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -47,19 +48,34 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> setRole({required SetRoleBody body}) {
+  Future<Result<UserResponse>> setRole({
+    required String userId,
+    required String role,
+  }) {
     return BetterAuthCallAdapter<UserResponse>().adapt(
-      () => _setRole(body: body),
+      () => _setRole(userId: userId, role: role),
     );
   }
 
   Future<HttpResponse<UserResponse>> _createUser({
-    required CreateUserBody body,
+    required String name,
+    required String email,
+    required String password,
+    String? role,
+    String? data,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'name': name,
+      'email': email,
+      'password': password,
+      'role': role,
+      'data': data,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<UserResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -83,17 +99,99 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> createUser({required CreateUserBody body}) {
+  Future<Result<UserResponse>> createUser({
+    required String name,
+    required String email,
+    required String password,
+    String? role,
+    String? data,
+  }) {
     return BetterAuthCallAdapter<UserResponse>().adapt(
-      () => _createUser(body: body),
+      () => _createUser(
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+        data: data,
+      ),
     );
   }
 
-  Future<HttpResponse<UserResponse>> _unBanUser({required BanBody body}) async {
+  Future<HttpResponse<UserResponse>> _listUsers() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<Result<UserResponse>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/list-users',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late UserResponse _value;
+    try {
+      _value = UserResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<UserResponse>> listUsers() {
+    return BetterAuthCallAdapter<UserResponse>().adapt(() => _listUsers());
+  }
+
+  Future<HttpResponse<UserResponse>> _listUserSessions({
+    required String userId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{'userId': userId};
+    final _options = _setStreamType<Result<UserResponse>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/list-user-sessions',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late UserResponse _value;
+    try {
+      _value = UserResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<UserResponse>> listUserSessions({required String userId}) {
+    return BetterAuthCallAdapter<UserResponse>().adapt(
+      () => _listUserSessions(userId: userId),
+    );
+  }
+
+  Future<HttpResponse<UserResponse>> _unBanUser({
+    required String userId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{'userId': userId};
     final _options = _setStreamType<Result<UserResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -117,17 +215,27 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> unBanUser({required BanBody body}) {
+  Future<Result<UserResponse>> unBanUser({required String userId}) {
     return BetterAuthCallAdapter<UserResponse>().adapt(
-      () => _unBanUser(body: body),
+      () => _unBanUser(userId: userId),
     );
   }
 
-  Future<HttpResponse<UserResponse>> _banUser({required BanBody body}) async {
+  Future<HttpResponse<UserResponse>> _banUser({
+    required String userId,
+    String banReason = "",
+    String? banExpiresIn,
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'userId': userId,
+      'banReason': banReason,
+      'banExpiresIn': banExpiresIn,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<UserResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -151,19 +259,27 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> banUser({required BanBody body}) {
+  Future<Result<UserResponse>> banUser({
+    required String userId,
+    String banReason = "",
+    String? banExpiresIn,
+  }) {
     return BetterAuthCallAdapter<UserResponse>().adapt(
-      () => _banUser(body: body),
+      () => _banUser(
+        userId: userId,
+        banReason: banReason,
+        banExpiresIn: banExpiresIn,
+      ),
     );
   }
 
   Future<HttpResponse<SessionResponse>> _impersonateUser({
-    required BanBody body,
+    required String userId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'userId': userId};
     final _options = _setStreamType<Result<SessionResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -187,9 +303,45 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<SessionResponse>> impersonateUser({required BanBody body}) {
+  Future<Result<SessionResponse>> impersonateUser({required String userId}) {
     return BetterAuthCallAdapter<SessionResponse>().adapt(
-      () => _impersonateUser(body: body),
+      () => _impersonateUser(userId: userId),
+    );
+  }
+
+  Future<HttpResponse<SuccessResponse>> _stopImpersonating({
+    required String userId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{'userId': userId};
+    final _options = _setStreamType<Result<SuccessResponse>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/stop-impersonating',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late SuccessResponse _value;
+    try {
+      _value = SuccessResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<SuccessResponse>> stopImpersonating({required String userId}) {
+    return BetterAuthCallAdapter<SuccessResponse>().adapt(
+      () => _stopImpersonating(userId: userId),
     );
   }
 
@@ -234,12 +386,12 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   Future<HttpResponse<SuccessResponse>> _removeUser({
-    required BanBody body,
+    required String userId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'userId': userId};
     final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -263,19 +415,23 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<SuccessResponse>> removeUser({required BanBody body}) {
+  Future<Result<SuccessResponse>> removeUser({required String userId}) {
     return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _removeUser(body: body),
+      () => _removeUser(userId: userId),
     );
   }
 
   Future<HttpResponse<StatusResponse>> _setUserPassword({
-    required SetUserPasswordBody body,
+    required String newPassword,
+    required String userId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'newPassword': newPassword,
+      'userId': userId,
+    };
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -300,20 +456,21 @@ class _AdminBetterAuth implements AdminBetterAuth {
 
   @override
   Future<Result<StatusResponse>> setUserPassword({
-    required SetUserPasswordBody body,
+    required String newPassword,
+    required String userId,
   }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _setUserPassword(body: body),
+      () => _setUserPassword(newPassword: newPassword, userId: userId),
     );
   }
 
   Future<HttpResponse<CheckPermissionResponse>> _hasPermission({
-    required CheckPermissionBody body,
+    required Map<String, dynamic> permissions,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'permissions': permissions};
     final _options = _setStreamType<Result<CheckPermissionResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -338,10 +495,10 @@ class _AdminBetterAuth implements AdminBetterAuth {
 
   @override
   Future<Result<CheckPermissionResponse>> hasPermission({
-    required CheckPermissionBody body,
+    required Map<String, dynamic> permissions,
   }) {
     return BetterAuthCallAdapter<CheckPermissionResponse>().adapt(
-      () => _hasPermission(body: body),
+      () => _hasPermission(permissions: permissions),
     );
   }
 

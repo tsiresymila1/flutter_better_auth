@@ -3,12 +3,10 @@ import 'package:retrofit/retrofit.dart';
 
 import '../../adapter.dart';
 import '../../models/result/result.dart';
-import 'models/email/sign_in_email_body.dart';
-import 'models/email/sign_in_email_response.dart';
-import 'models/social/sign_in_social_body.dart';
-import 'models/social/sign_in_social_response.dart';
-import 'models/username/sign_in_username_body.dart';
 import '../sign_up/models/sign_up_response/sign_up_response.dart';
+import 'models/email/sign_in_email_response.dart';
+import 'models/social/sign_in_social_response.dart';
+import 'models/social/social_id_token_body.dart';
 
 part 'sign_in_better_auth.g.dart';
 
@@ -22,17 +20,30 @@ abstract class SignInBetterAuth {
 
   @POST('/sign-in/social')
   Future<Result<SignInSocialResponse>> social({
-    @Body(nullToAbsent: true) required SignInSocialBody body,
+    @BodyExtra('provider') required String provider,
+    @BodyExtra('callbackURL') String? callbackURL,
+    @BodyExtra('newUserCallbackURL') String? newUserCallbackURL,
+    @BodyExtra('errorCallbackURL') String? errorCallbackURL,
+    @BodyExtra('disableRedirect') bool? disableRedirect,
+    @BodyExtra('scopes') String? scopes,
+    @BodyExtra('idToken') SocialIdTokenBody? idToken,
+    @BodyExtra('requestSignUp') String? requestSignUp,
+    @BodyExtra('loginHint') String? loginHint,
   });
 
   @POST('/sign-in/email')
   Future<Result<SignInEmailResponse>> email({
-    @Body(nullToAbsent: true) required SignInEmailBody body,
+    @BodyExtra('email') required String email,
+    @BodyExtra('password') required String password,
+    @BodyExtra('callbackURL') String? callbackURL,
+    @BodyExtra('rememberMe') String? rememberMe,
   });
 
   @POST('/sign-in/username')
   Future<Result<SignInEmailResponse>> username({
-    @Body(nullToAbsent: true) required SignInUsernameBody body,
+    @BodyExtra('username') required String username,
+    @BodyExtra('password') required String password,
+    @BodyExtra('rememberMe') String? rememberMe,
   });
 
   @POST('/sign-in/anonymous')

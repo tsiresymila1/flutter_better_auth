@@ -4,19 +4,12 @@ import 'package:retrofit/retrofit.dart';
 
 import 'adapter.dart';
 import 'default/sign_up/models/sign_up_response/sign_up_response.dart';
-import 'models/common/change_email/change_email_body.dart';
-import 'models/common/change_password/change_password_body.dart';
-import 'models/common/forgot_password/forgot_password_body.dart';
-import 'models/common/reset_password/reset_password_body.dart';
-import 'models/common/send_verification_email/verification_email_body.dart';
 import 'models/common/sign_out/sign_out_response.dart';
 import 'models/common/verify_email/verify_email_response.dart';
 import 'models/result/result.dart';
 import 'models/result/status_response.dart';
-import 'models/session/session_response.dart';
-import 'models/user/delete_user/delete_user_body.dart';
-import 'models/user/update_user/update_user_body.dart';
 import 'models/result/success_response.dart';
+import 'models/session/session_response.dart';
 
 part 'better_auth_client.g.dart';
 
@@ -28,11 +21,6 @@ abstract class BetterAuthClient {
     ParseErrorLogger? errorLogger,
   }) = _BetterAuthClient;
 
-  // @POST('/sign-in/social')
-  // Future<Result<SignInSocialResponse>> signInWithSocial({
-  //   @Body(nullToAbsent: true) required SignInSocialBody body,
-  // });
-
   @GET('/get-session')
   Future<Result<SessionResponse>> getSession();
 
@@ -41,24 +29,16 @@ abstract class BetterAuthClient {
     @Body(nullToAbsent: true) Map<String, dynamic> body = const {},
   });
 
-  // @POST('/sign-up/email')
-  // Future<Result<SignUpResponse>> signUpEmail({
-  //   @Body(nullToAbsent: true) required SignUpBody body,
-  // });
-
-  // @POST('/sign-in/email')
-  // Future<Result<SignInEmailResponse>> signInWithEmail({
-  //   @Body(nullToAbsent: true) required SignInEmailBody body,
-  // });
-
   @POST('/forget-password')
   Future<Result<StatusResponse>> forgotPassword({
-    @Body(nullToAbsent: true) required ForgotPasswordBody body,
+    @BodyExtra('email') required String email,
+    @BodyExtra('redirectTo') String? redirectTo,
   });
 
   @POST('/reset-password')
   Future<Result<StatusResponse>> resetPassword({
-    @Body(nullToAbsent: true) required ResetPasswordBody body,
+    @BodyExtra('newPassword') required String newPassword,
+    @BodyExtra('token') String? token,
   });
 
   @GET('/verify-email')
@@ -69,27 +49,34 @@ abstract class BetterAuthClient {
 
   @POST('/send-verification-email')
   Future<Result<StatusResponse>> sendVerificationEmail({
-    @Body(nullToAbsent: true) required VerificationEmailBody body,
+    @BodyExtra('email') required String email,
+    @BodyExtra('callbackURL') String? callbackURL,
   });
 
   @POST('/change-email')
   Future<Result<StatusResponse>> changeEmail({
-    @Body(nullToAbsent: true) required ChangeEmailBody body,
+    @BodyExtra('newEmail') required String newEmail,
+    @BodyExtra('callbackURL') String? callbackURL,
   });
 
   @POST('/change-password')
   Future<Result<SignUpResponse>> changePassword({
-    @Body(nullToAbsent: true) required ChangePasswordBody body,
+    @BodyExtra('newPassword') required String newPassword,
+    @BodyExtra('currentPassword') required String currentPassword,
+    @BodyExtra('revokeOtherSessions') String? revokeOtherSessions,
   });
 
   @POST('/update-user')
   Future<Result<StatusResponse>> updateUser({
-    @Body(nullToAbsent: true) UpdateUserBody body = const UpdateUserBody(),
+    @BodyExtra('name') String? name,
+    @BodyExtra('image') String? image,
   });
 
   @POST('/delete-user')
   Future<Result<SuccessResponse>> deleteUser({
-    @Body(nullToAbsent: true) DeleteUserBody body = const DeleteUserBody(),
+    @BodyExtra('callbackURL') String? callbackURL,
+    @BodyExtra('password') String? password,
+    @BodyExtra('token') String? token,
   });
 
   @GET('/list-sessions')

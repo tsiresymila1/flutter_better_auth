@@ -124,7 +124,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.5"
+    version: "0.0.8"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -459,10 +459,10 @@ packages:
     dependency: transitive
     description:
       name: retrofit
-      sha256: c6cc9ad3374e6d07008343140a67afffaaa34cdf6bf08d4847d91417a99dcf45
+      sha256: f56124c1bda4eec3a68548957aa1a0d3f6cd728511e81d4215a4167de7197fdd
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.2"
+    version: "4.5.0"
   sky_engine:
     dependency: transitive
     description: flutter

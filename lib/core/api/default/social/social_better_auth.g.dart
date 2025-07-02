@@ -6,7 +6,7 @@ part of 'social_better_auth.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _SocialBetterAuth implements SocialBetterAuth {
   _SocialBetterAuth(this._dio, {this.baseUrl, this.errorLogger});
@@ -19,12 +19,15 @@ class _SocialBetterAuth implements SocialBetterAuth {
 
   Future<HttpResponse<SessionResponse>> _callback({
     required String provider,
-    CallbackBody body = const CallbackBody(),
+    String? code,
+    String? state,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'code': code, 'state': state};
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SessionResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -50,20 +53,29 @@ class _SocialBetterAuth implements SocialBetterAuth {
   @override
   Future<Result<SessionResponse>> callback({
     required String provider,
-    CallbackBody body = const CallbackBody(),
+    String? code,
+    String? state,
   }) {
     return BetterAuthCallAdapter<SessionResponse>().adapt(
-      () => _callback(provider: provider, body: body),
+      () => _callback(provider: provider, code: code, state: state),
     );
   }
 
   Future<HttpResponse<SocialLinkResponse>> _link({
-    required SocialLinkBody body,
+    String? callbackURL,
+    String? scopes,
+    required String provider,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'callbackURL': callbackURL,
+      'scopes': scopes,
+      'provider': provider,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SocialLinkResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -87,18 +99,22 @@ class _SocialBetterAuth implements SocialBetterAuth {
   }
 
   @override
-  Future<Result<SocialLinkResponse>> link({required SocialLinkBody body}) {
+  Future<Result<SocialLinkResponse>> link({
+    String? callbackURL,
+    String? scopes,
+    required String provider,
+  }) {
     return BetterAuthCallAdapter<SocialLinkResponse>().adapt(
-      () => _link(body: body),
+      () => _link(callbackURL: callbackURL, scopes: scopes, provider: provider),
     );
   }
 
-  Future<HttpResponse<List<SocialAccount>>> _listAccounts() async {
+  Future<HttpResponse<List<SocialAccountResponse>>> _listAccounts() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<Result<List<SocialAccount>>>(
+    final _options = _setStreamType<Result<List<SocialAccountResponse>>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -109,13 +125,13 @@ class _SocialBetterAuth implements SocialBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<List<dynamic>>(_options);
-    late List<SocialAccount> _value;
+    late List<SocialAccountResponse> _value;
     try {
       _value =
           _result.data!
               .map(
                 (dynamic i) =>
-                    SocialAccount.fromJson(i as Map<String, dynamic>),
+                    SocialAccountResponse.fromJson(i as Map<String, dynamic>),
               )
               .toList();
     } on Object catch (e, s) {
@@ -127,19 +143,25 @@ class _SocialBetterAuth implements SocialBetterAuth {
   }
 
   @override
-  Future<Result<List<SocialAccount>>> listAccounts() {
-    return BetterAuthCallAdapter<List<SocialAccount>>().adapt(
+  Future<Result<List<SocialAccountResponse>>> listAccounts() {
+    return BetterAuthCallAdapter<List<SocialAccountResponse>>().adapt(
       () => _listAccounts(),
     );
   }
 
   Future<HttpResponse<StatusResponse>> _unlink({
-    required UnlinkAccountBody body,
+    required String providerId,
+    String? accountId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'providerId': providerId,
+      'accountId': accountId,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -163,19 +185,30 @@ class _SocialBetterAuth implements SocialBetterAuth {
   }
 
   @override
-  Future<Result<StatusResponse>> unlink({required UnlinkAccountBody body}) {
+  Future<Result<StatusResponse>> unlink({
+    required String providerId,
+    String? accountId,
+  }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _unlink(body: body),
+      () => _unlink(providerId: providerId, accountId: accountId),
     );
   }
 
   Future<HttpResponse<TokenResponse>> _refreshToken({
-    required TokenBody body,
+    required String providerId,
+    String? accountId,
+    String? userId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'providerId': providerId,
+      'accountId': accountId,
+      'userId': userId,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<TokenResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -199,19 +232,35 @@ class _SocialBetterAuth implements SocialBetterAuth {
   }
 
   @override
-  Future<Result<TokenResponse>> refreshToken({required TokenBody body}) {
+  Future<Result<TokenResponse>> refreshToken({
+    required String providerId,
+    String? accountId,
+    String? userId,
+  }) {
     return BetterAuthCallAdapter<TokenResponse>().adapt(
-      () => _refreshToken(body: body),
+      () => _refreshToken(
+        providerId: providerId,
+        accountId: accountId,
+        userId: userId,
+      ),
     );
   }
 
   Future<HttpResponse<TokenResponse>> _getAccessToken({
-    required TokenBody body,
+    required String providerId,
+    String? accountId,
+    String? userId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'providerId': providerId,
+      'accountId': accountId,
+      'userId': userId,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<TokenResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -235,9 +284,17 @@ class _SocialBetterAuth implements SocialBetterAuth {
   }
 
   @override
-  Future<Result<TokenResponse>> getAccessToken({required TokenBody body}) {
+  Future<Result<TokenResponse>> getAccessToken({
+    required String providerId,
+    String? accountId,
+    String? userId,
+  }) {
     return BetterAuthCallAdapter<TokenResponse>().adapt(
-      () => _getAccessToken(body: body),
+      () => _getAccessToken(
+        providerId: providerId,
+        accountId: accountId,
+        userId: userId,
+      ),
     );
   }
 

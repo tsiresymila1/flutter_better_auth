@@ -1,5 +1,5 @@
-import '../../../../flutter_better_auth.dart';
 import '../../core/api/better_auth_client.dart';
+import '../../core/flutter_better_auth.dart';
 import 'jwt_better_auth.dart';
 
 extension JwtBetterAuthExtension on BetterAuthClient {

@@ -6,7 +6,7 @@ part of 'better_auth_client.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _BetterAuthClient implements BetterAuthClient {
   _BetterAuthClient(this._dio, {this.baseUrl, this.errorLogger});
@@ -90,12 +90,15 @@ class _BetterAuthClient implements BetterAuthClient {
   }
 
   Future<HttpResponse<StatusResponse>> _forgotPassword({
-    required ForgotPasswordBody body,
+    required String email,
+    String? redirectTo,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'email': email, 'redirectTo': redirectTo};
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -120,20 +123,24 @@ class _BetterAuthClient implements BetterAuthClient {
 
   @override
   Future<Result<StatusResponse>> forgotPassword({
-    required ForgotPasswordBody body,
+    required String email,
+    String? redirectTo,
   }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _forgotPassword(body: body),
+      () => _forgotPassword(email: email, redirectTo: redirectTo),
     );
   }
 
   Future<HttpResponse<StatusResponse>> _resetPassword({
-    required ResetPasswordBody body,
+    required String newPassword,
+    String? token,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'newPassword': newPassword, 'token': token};
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -158,10 +165,11 @@ class _BetterAuthClient implements BetterAuthClient {
 
   @override
   Future<Result<StatusResponse>> resetPassword({
-    required ResetPasswordBody body,
+    required String newPassword,
+    String? token,
   }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _resetPassword(body: body),
+      () => _resetPassword(newPassword: newPassword, token: token),
     );
   }
 
@@ -210,12 +218,15 @@ class _BetterAuthClient implements BetterAuthClient {
   }
 
   Future<HttpResponse<StatusResponse>> _sendVerificationEmail({
-    required VerificationEmailBody body,
+    required String email,
+    String? callbackURL,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'email': email, 'callbackURL': callbackURL};
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -240,20 +251,27 @@ class _BetterAuthClient implements BetterAuthClient {
 
   @override
   Future<Result<StatusResponse>> sendVerificationEmail({
-    required VerificationEmailBody body,
+    required String email,
+    String? callbackURL,
   }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _sendVerificationEmail(body: body),
+      () => _sendVerificationEmail(email: email, callbackURL: callbackURL),
     );
   }
 
   Future<HttpResponse<StatusResponse>> _changeEmail({
-    required ChangeEmailBody body,
+    required String newEmail,
+    String? callbackURL,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'newEmail': newEmail,
+      'callbackURL': callbackURL,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -277,19 +295,30 @@ class _BetterAuthClient implements BetterAuthClient {
   }
 
   @override
-  Future<Result<StatusResponse>> changeEmail({required ChangeEmailBody body}) {
+  Future<Result<StatusResponse>> changeEmail({
+    required String newEmail,
+    String? callbackURL,
+  }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _changeEmail(body: body),
+      () => _changeEmail(newEmail: newEmail, callbackURL: callbackURL),
     );
   }
 
   Future<HttpResponse<SignUpResponse>> _changePassword({
-    required ChangePasswordBody body,
+    required String newPassword,
+    required String currentPassword,
+    String? revokeOtherSessions,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'newPassword': newPassword,
+      'currentPassword': currentPassword,
+      'revokeOtherSessions': revokeOtherSessions,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignUpResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -314,20 +343,29 @@ class _BetterAuthClient implements BetterAuthClient {
 
   @override
   Future<Result<SignUpResponse>> changePassword({
-    required ChangePasswordBody body,
+    required String newPassword,
+    required String currentPassword,
+    String? revokeOtherSessions,
   }) {
     return BetterAuthCallAdapter<SignUpResponse>().adapt(
-      () => _changePassword(body: body),
+      () => _changePassword(
+        newPassword: newPassword,
+        currentPassword: currentPassword,
+        revokeOtherSessions: revokeOtherSessions,
+      ),
     );
   }
 
   Future<HttpResponse<StatusResponse>> _updateUser({
-    UpdateUserBody body = const UpdateUserBody(),
+    String? name,
+    String? image,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'name': name, 'image': image};
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -351,21 +389,27 @@ class _BetterAuthClient implements BetterAuthClient {
   }
 
   @override
-  Future<Result<StatusResponse>> updateUser({
-    UpdateUserBody body = const UpdateUserBody(),
-  }) {
+  Future<Result<StatusResponse>> updateUser({String? name, String? image}) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _updateUser(body: body),
+      () => _updateUser(name: name, image: image),
     );
   }
 
   Future<HttpResponse<SuccessResponse>> _deleteUser({
-    DeleteUserBody body = const DeleteUserBody(),
+    String? callbackURL,
+    String? password,
+    String? token,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'callbackURL': callbackURL,
+      'password': password,
+      'token': token,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SuccessResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -390,10 +434,16 @@ class _BetterAuthClient implements BetterAuthClient {
 
   @override
   Future<Result<SuccessResponse>> deleteUser({
-    DeleteUserBody body = const DeleteUserBody(),
+    String? callbackURL,
+    String? password,
+    String? token,
   }) {
     return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _deleteUser(body: body),
+      () => _deleteUser(
+        callbackURL: callbackURL,
+        password: password,
+        token: token,
+      ),
     );
   }
 
