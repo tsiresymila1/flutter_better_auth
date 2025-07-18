@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_better_auth/core/api/models/result/result_extension.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
@@ -10,7 +11,7 @@ import 'models/social/sign_in_social_response.dart';
 import 'models/social/social_id_token_body.dart';
 import 'sign_in_better_auth.dart';
 
-extension SignInSocial on SignInBetterAuth {
+extension SignInSocialExtension on SignInBetterAuth {
   Future<Result<SignInSocialResponse>> social({
     required String provider,
     String? callbackURL,
@@ -26,9 +27,33 @@ extension SignInSocial on SignInBetterAuth {
     final res = await socialAuth(
       provider: provider,
       callbackURL:
-          "${callbackUrlScheme != null ? "$callbackUrlScheme://" : ""}${callbackURL ?? 'auth-callback'}",
-      newUserCallbackURL: newUserCallbackURL,
-      errorCallbackURL: errorCallbackURL,
+          callbackURL != null
+              ? !kIsWeb
+                  ? Uri.parse(
+                    callbackURL,
+                  ).replace(scheme: callbackUrlScheme).toString()
+                  : callbackURL
+              : !kIsWeb
+              ? "${callbackUrlScheme ?? 'https'}://auth-callback"
+              : null,
+
+      newUserCallbackURL:
+          newUserCallbackURL != null
+              ? !kIsWeb
+                  ? Uri.parse(
+                    newUserCallbackURL,
+                  ).replace(scheme: callbackUrlScheme).toString()
+                  : newUserCallbackURL
+              : null,
+
+      errorCallbackURL:
+          errorCallbackURL != null
+              ? !kIsWeb
+                  ? Uri.parse(
+                    errorCallbackURL,
+                  ).replace(scheme: callbackUrlScheme).toString()
+                  : errorCallbackURL
+              : null,
       disableRedirect: disableRedirect,
       scopes: scopes,
       idToken: idToken,
@@ -54,7 +79,7 @@ extension SignInSocial on SignInBetterAuth {
                 .map((str) => Cookie.fromSetCookieValue(str))
                 .toList();
 
-        await FlutterBetterAuth.storage.saveCookies(
+        await FlutterBetterAuth.storage?.saveCookies(
           Uri.parse(FlutterBetterAuth.baseUrl).host,
           cookies,
         );

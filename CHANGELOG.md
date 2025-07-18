@@ -68,6 +68,11 @@
 
 - Remove log.
 
+### 0.1.2
+
+- Remove log.
+- Add condition for social auth on web
+
 ### Upcoming
 
 - Two-Factor Authentication

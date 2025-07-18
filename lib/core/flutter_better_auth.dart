@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_better_auth/core/api/better_auth_client.dart';
 import 'package:flutter_better_auth/core/storage/custom_persist_cookie_jar.dart';
 import 'package:flutter_better_auth/core/storage/hive_storage.dart';
@@ -17,7 +18,7 @@ class FlutterBetterAuth {
 
   static late String baseUrl;
   static late final Dio dioClient;
-  static late final StorageInterface storage;
+  static late final StorageInterface? storage;
 
   FlutterBetterAuth._internal() {
     _client = BetterAuthClient(dioClient, baseUrl: baseUrl);
@@ -30,7 +31,7 @@ class FlutterBetterAuth {
   }) async {
     if (_initialized) return;
     baseUrl = url;
-    if (store == null) {
+    if (store == null && !kIsWeb) {
       await HiveStorage.init();
       storage = HiveStorage();
     } else {

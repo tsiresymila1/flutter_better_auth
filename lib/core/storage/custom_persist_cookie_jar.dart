@@ -1,21 +1,19 @@
 import 'package:cookie_jar/cookie_jar.dart';
-import 'package:flutter_better_auth/core/utils/logger.dart';
 
 import 'storage.dart';
 
 class CustomPersistCookieJar extends PersistCookieJar {
-  final StorageInterface store;
+  final StorageInterface? store;
   CustomPersistCookieJar({required this.store, required super.storage});
 
   @override
   Future<void> saveFromResponse(Uri uri, List<Cookie> cookies) async {
-    logger.i(uri.host);
-    await store.saveCookies(uri.host, cookies);
+    await store?.saveCookies(uri.host, cookies);
     return super.saveFromResponse(uri, cookies);
   }
 
   @override
   Future<List<Cookie>> loadForRequest(Uri uri) async {
-    return await store.loadCookies(uri.host);
+    return await store?.loadCookies(uri.host) ?? [];
   }
 }

@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterBetterAuth.initialize(
-    url: 'https://b7def5a952f2.ngrok-free.app/api/auth',
+    url: 'https://84683aa48a8a.ngrok-free.app/api/auth',
   );
   await dotenv.load();
   runApp(const MyApp());
@@ -89,7 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     final res = await client.signIn.social(
                       provider: 'github',
                       disableRedirect: true,
-                      callbackURL: "/auth-callback",
                       callbackUrlScheme: "myapp",
                     );
                   },

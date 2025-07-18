@@ -75,9 +75,9 @@ Access BetterAuth client using `BetterAuthConsumer`:
 
 ```dart
 BetterAuthConsumer(
-builder: (context, client) {
-return Widget();
-}
+  builder: (context, client) {
+    return Widget();
+  }
 )
 ```
 
@@ -249,6 +249,7 @@ If the social provider does not support `idToken`, follow these steps:
 ```xml
 <manifest>
    <application>
+      ...
       <activity
               android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
               android:exported="true"
@@ -260,6 +261,7 @@ If the social provider does not support `idToken`, follow these steps:
             <data android:scheme="YOUR_CALLBACK_URL_SCHEME_HERE" />
          </intent-filter>
       </activity>
+      ...
    </application>
 </manifest>
 ```
