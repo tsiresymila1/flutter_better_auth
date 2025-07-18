@@ -17,7 +17,7 @@ class _SignInBetterAuth implements SignInBetterAuth {
 
   final ParseErrorLogger? errorLogger;
 
-  Future<HttpResponse<SignInSocialResponse>> _social({
+  Future<HttpResponse<SignInSocialResponse>> _socialAuth({
     required String provider,
     String? callbackURL,
     String? newUserCallbackURL,
@@ -67,7 +67,7 @@ class _SignInBetterAuth implements SignInBetterAuth {
   }
 
   @override
-  Future<Result<SignInSocialResponse>> social({
+  Future<Result<SignInSocialResponse>> socialAuth({
     required String provider,
     String? callbackURL,
     String? newUserCallbackURL,
@@ -79,7 +79,7 @@ class _SignInBetterAuth implements SignInBetterAuth {
     String? loginHint,
   }) {
     return BetterAuthCallAdapter<SignInSocialResponse>().adapt(
-      () => _social(
+      () => _socialAuth(
         provider: provider,
         callbackURL: callbackURL,
         newUserCallbackURL: newUserCallbackURL,

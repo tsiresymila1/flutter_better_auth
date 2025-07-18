@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 
 import '../../adapter.dart';
@@ -19,7 +19,7 @@ abstract class SignInBetterAuth {
   }) = _SignInBetterAuth;
 
   @POST('/sign-in/social')
-  Future<Result<SignInSocialResponse>> social({
+  Future<Result<SignInSocialResponse>> socialAuth({
     @BodyExtra('provider') required String provider,
     @BodyExtra('callbackURL') String? callbackURL,
     @BodyExtra('newUserCallbackURL') String? newUserCallbackURL,

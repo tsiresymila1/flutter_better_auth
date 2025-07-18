@@ -2,8 +2,9 @@
     <application
         android:label="example"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-        <activity
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+    <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
@@ -35,7 +36,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="betterapp" />
+                <data android:scheme="myapp" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

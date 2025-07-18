@@ -55,10 +55,14 @@
     password: "12345678",
   );
   ```
-  
+
 ### 0.0.9
 
-- Fix body serialization 
+- Fix body serialization
+
+### 0.1.0
+
+- Add `flutter_auth_web_2` for social auth.
 
 ### Upcoming
 

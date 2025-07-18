@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_better_auth/core/utils/logger.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterBetterAuth.initialize(url: 'http://10.0.2.2:3000/api/auth');
+  await FlutterBetterAuth.initialize(
+    url: 'https://b7def5a952f2.ngrok-free.app/api/auth',
+  );
   await dotenv.load();
   runApp(const MyApp());
 }
@@ -86,70 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 FilledButton(
                   onPressed: () async {
-                    final res2 = await client.signIn.social(
-                      provider: 'google',
-                      disableRedirect: true,
-                      idToken: SocialIdTokenBody(token: "test_token"),
-                    );
-                    return;
                     final res = await client.signIn.social(
                       provider: 'github',
                       disableRedirect: true,
-                      callbackURL: 'betterapp://oauth-callback',
+                      callbackURL: "/auth-callback",
+                      callbackUrlScheme: "myapp",
                     );
-                    if (res is Success<SignInSocialResponse>) {
-                      logger.i(res.data.url);
-                      final uri = Uri.parse(res.data.url);
-                      final newUri = uri.replace(
-                        queryParameters: {
-                          ...uri.queryParameters,
-                          "redirect_uri": 'betterapp://oauth-callback',
-                        },
-                      );
-                      final result = await FlutterWebAuth2.authenticate(
-                        url: newUri.toString(),
-                        callbackUrlScheme: 'betterapp',
-                      );
-                      logger.i(result);
-                      final uriCode = Uri.parse(result);
-                      final code = uriCode.queryParameters['code'];
-                      final state = uriCode.queryParameters['state'];
-                      if (code != null) {
-                        final callbackRes = await client.social.callback(
-                          provider: 'github',
-                          code: code,
-                          state: state,
-                        );
-                        logger.i(callbackRes);
-                      }
-                    }
-                    return;
-                    // OAuth2Client ghClient = GitHubOAuth2Client(
-                    //   redirectUri: "betterapp://oauth-callback",
-                    //   customUriScheme: 'betterapp',
-                    // );
-                    // final res = await ghClient.getTokenWithAuthCodeFlow(
-                    //   clientId: dotenv.get('GITHUB_CLIENT_ID'),
-                    //   scopes: ['user', 'email'],
-                    //   clientSecret: dotenv.get('GITHUB_CLIENT_SECRET'),
-                    // );
-                    // logger.i(res.toMap());
-                    //
-                    // final resu = await client.signIn.social(
-                    //   body: SignInSocialBody(
-                    //     disableRedirect: true,
-                    //     provider: "github",
-                    //     idToken: SocialIdToken(
-                    //         token: res.toString(),
-                    //         accessToken: res.accessToken,
-                    //         refreshToken: res.refreshToken,
-                    //         expiresAt: res.expiresIn,
-                    //     ),
-                    //   ),
-                    // );
-                    // logger.i(resu);
-                    // logger.i(result);
-                    // logger.i(code);
                   },
                   child: Text("Github"),
                 ),

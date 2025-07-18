@@ -17,7 +17,7 @@ class FlutterBetterAuth {
 
   static late String baseUrl;
   static late final Dio dioClient;
-  static late final StorageInterface _storage;
+  static late final StorageInterface storage;
 
   FlutterBetterAuth._internal() {
     _client = BetterAuthClient(dioClient, baseUrl: baseUrl);
@@ -26,15 +26,15 @@ class FlutterBetterAuth {
   static Future<void> initialize({
     required String url,
     Dio? dio,
-    StorageInterface? storage,
+    StorageInterface? store,
   }) async {
     if (_initialized) return;
     baseUrl = url;
-    if (storage == null) {
+    if (store == null) {
       await HiveStorage.init();
-      _storage = HiveStorage();
+      storage = HiveStorage();
     } else {
-      _storage = storage;
+      storage = store;
     }
     dioClient =
         dio ??
@@ -43,12 +43,15 @@ class FlutterBetterAuth {
             headers: {
               HttpHeaders.contentTypeHeader: 'application/json',
               HttpHeaders.userAgentHeader: 'FlutterBetterAuth/1.0.0',
+              'flutter-origin': 'flutter://',
+              'expo-origin': 'exp://',
+              'x-skip-oauth-proxy': true,
             },
             validateStatus: (status) => status != null && status < 300,
           ),
         );
     final cookieJar = CustomPersistCookieJar(
-      store: _storage,
+      store: storage,
       storage: MemoryStorage(),
     );
     dioClient.interceptors.add(CookieManager(cookieJar));
