@@ -13,8 +13,38 @@ export 'core/api/default/social/models/list_account/social_account_response.dart
 export 'core/api/default/social/models/token/token_response.dart';
 export 'core/api/default/social/social_better_auth.dart';
 export 'core/api/default/social/social_extension.dart';
+
+// ORGANIZATION PLUGIN
+export 'plugins/organization/organization_better_auth.dart';
+export 'plugins/organization/organization_extension.dart';
+export 'core/models/organization/organization.dart';
+
+// TWO FACTOR PLUGIN
+export 'plugins/two_factor/models/totp_uri_response.dart';
+export 'plugins/two_factor/models/two_factor_responses.dart';
+export 'plugins/two_factor/two_factor_better_auth.dart';
+export 'plugins/two_factor/two_factor_extension.dart';
+export 'core/models/two_factor/two_factor.dart';
+
+// ADMIN PLUGIN
+export 'plugins/admin/models/admin_models.dart';
+export 'plugins/admin/admin_better_auth.dart';
+export 'plugins/admin/admin_extension.dart';
+
+// API KEY PLUGIN
+export 'plugins/api_key/models/api_key.dart';
+export 'plugins/api_key/api_key_better_auth.dart';
+export 'plugins/api_key/api_key_extension.dart';
+
+// ONE TIME TOKEN PLUGIN
+export 'plugins/one_time_token/models/one_time_token_models.dart';
+export 'plugins/one_time_token/one_time_token_better_auth.dart';
+export 'plugins/one_time_token/one_time_token_extension.dart';
+
 export 'core/api/models/common/sign_out/sign_out_response.dart';
 export 'core/api/models/common/verify_email/verify_email_response.dart';
+export 'core/api/models/common/change_email/change_email_response.dart';
+export 'core/api/models/common/user_wrapper/user_wrapper_response.dart';
 
 // API BODY AND RESPONSE
 export 'core/api/models/result/result.dart';

@@ -4,7 +4,9 @@ import 'package:retrofit/retrofit.dart';
 
 import 'adapter.dart';
 import 'default/sign_up/models/sign_up_response/sign_up_response.dart';
+import 'models/common/change_email/change_email_response.dart';
 import 'models/common/sign_out/sign_out_response.dart';
+import 'models/common/user_wrapper/user_wrapper_response.dart';
 import 'models/common/verify_email/verify_email_response.dart';
 import 'models/result/result.dart';
 import 'models/result/status_response.dart';
@@ -22,7 +24,7 @@ abstract class BetterAuthClient {
   }) = _BetterAuthClient;
 
   @GET('/get-session')
-  Future<Result<SessionResponse>> getSession();
+  Future<Result<SessionResponse?>> getSession();
 
   @POST('/sign-out')
   Future<Result<SignOutResponse>> signOut({
@@ -54,7 +56,7 @@ abstract class BetterAuthClient {
   });
 
   @POST('/change-email')
-  Future<Result<StatusResponse>> changeEmail({
+  Future<Result<ChangeEmailResponse>> changeEmail({
     @BodyExtra('newEmail') required String newEmail,
     @BodyExtra('callbackURL') String? callbackURL,
   });
@@ -63,11 +65,11 @@ abstract class BetterAuthClient {
   Future<Result<SignUpResponse>> changePassword({
     @BodyExtra('newPassword') required String newPassword,
     @BodyExtra('currentPassword') required String currentPassword,
-    @BodyExtra('revokeOtherSessions') String? revokeOtherSessions,
+    @BodyExtra('revokeOtherSessions') bool? revokeOtherSessions,
   });
 
   @POST('/update-user')
-  Future<Result<StatusResponse>> updateUser({
+  Future<Result<UserWrapperResponse>> updateUser({
     @BodyExtra('name') String? name,
     @BodyExtra('image') String? image,
   });
@@ -84,7 +86,7 @@ abstract class BetterAuthClient {
 
   @POST('/revoke-session')
   Future<Result<StatusResponse>> revokeSession({
-    @Body(nullToAbsent: true) Map<String, dynamic> body = const {},
+    @BodyExtra('token') required String token,
   });
 
   @POST('/revoke-sessions')

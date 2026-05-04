@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterBetterAuth.initialize(
-    url: 'https://37ad8d1e3e23.ngrok-free.app/api/auth',
-  );
   await dotenv.load();
+  await FlutterBetterAuth.initialize(
+    url: dotenv.env['BETTER_AUTH_URL']!,
+  );
   runApp(const MyApp());
 }
 
@@ -17,11 +19,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BetterAuthProvider(
-      child: MaterialApp(
+      child: ShadApp(
         title: 'BetterAuth',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        darkTheme: ShadThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ShadSlateColorScheme.dark(),
         ),
+        theme: ShadThemeData(
+          brightness: Brightness.light,
+          colorScheme: ShadSlateColorScheme.light(),
+        ),
+        themeMode: ThemeMode.dark,
         home: const MyHomePage(title: 'Better Auth'),
       ),
     );
@@ -88,7 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () async {
                     await client.signIn.social(
                       provider: 'github',
-                      disableRedirect: true,
                       callbackUrlScheme: "myapp",
                     );
                   },

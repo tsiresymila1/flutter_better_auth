@@ -38,6 +38,7 @@ dependencies:
     path: ../
   logger: ^2.7.0
   flutter_dotenv: ^6.0.1
+  shadcn_ui: ^0.43.1
 
 dev_dependencies:
   flutter_test:

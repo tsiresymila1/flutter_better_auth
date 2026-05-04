@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_better_auth/core/api/models/result/result_extension.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../../../flutter_better_auth.dart';
 import '../../better_auth_client.dart';
+import '../../models/result/better_error.dart';
 import '../../models/result/result.dart';
 import 'models/social/sign_in_social_response.dart';
 import 'models/social/social_id_token_body.dart';
@@ -18,12 +20,13 @@ extension SignInSocialExtension on SignInBetterAuth {
     String? callbackUrlScheme,
     String? newUserCallbackURL,
     String? errorCallbackURL,
-    bool? disableRedirect,
+    bool? disableRedirect = true,
     String? scopes,
     SocialIdTokenBody? idToken,
     String? requestSignUp,
     String? loginHint,
   }) async {
+
     final res = await socialAuth(
       provider: provider,
       callbackURL:
@@ -70,24 +73,44 @@ extension SignInSocialExtension on SignInBetterAuth {
       return res;
     }
     if (res.data != null && callbackUrlScheme != null) {
-      final result = await FlutterWebAuth2.authenticate(
-        url: res.data!.url,
-        callbackUrlScheme: callbackUrlScheme,
-      );
-      final url = Uri.tryParse(result);
-      final cookie = url?.queryParameters['cookie'];
-      if (cookie != null && cookie.isNotEmpty) {
-        final List<Cookie> cookies =
-            [cookie]
-                .map((str) => str.split(RegExp('(?<=)(,)(?=[^;]+?=)')))
-                .expand((cookie) => cookie)
-                .where((cookie) => cookie.isNotEmpty)
-                .map((str) => Cookie.fromSetCookieValue(str))
-                .toList();
+      try {
+        final newUrl = Uri.parse(res.data!.url).toString().replaceAll(FlutterBetterAuth.baseUrl, "$callbackUrlScheme://auth-callback");
+        final result = await FlutterWebAuth2.authenticate(
+          url: "${FlutterBetterAuth.baseUrl}/expo-authorization-proxy?authorizationURL=${Uri.encodeComponent(newUrl)}",
+          callbackUrlScheme: callbackUrlScheme,
+        );
+        final url = Uri.tryParse(result);
+        final cookie = url?.queryParameters['cookie'];
+        if (cookie != null && cookie.isNotEmpty) {
+          final List<Cookie> cookies =
+              [cookie]
+                  .map((str) => str.split(RegExp('(?<=)(,)(?=[^;]+?=)')))
+                  .expand((cookie) => cookie)
+                  .where((cookie) => cookie.isNotEmpty)
+                  .map((str) => Cookie.fromSetCookieValue(str))
+                  .toList();
 
-        await FlutterBetterAuth.storage?.saveCookies(
-          Uri.parse(FlutterBetterAuth.baseUrl).host,
-          cookies,
+          await FlutterBetterAuth.storage?.saveCookies(
+            Uri.parse(FlutterBetterAuth.baseUrl).host,
+            cookies,
+          );
+        }
+      } on PlatformException catch (e) {
+        return Result.err(
+          BetterError(
+            code: e.code,
+            message: e.message?? "Error",
+            stack: e.stacktrace,
+          ),
+        );
+      } 
+      catch (e) {
+        return Result.err(
+          BetterError(
+            code: "ERROR",
+            message: e.toString(),
+            stack: e.toString(),
+          ),
         );
       }
     }

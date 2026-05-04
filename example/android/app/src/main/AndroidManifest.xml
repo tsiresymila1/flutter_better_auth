@@ -2,9 +2,8 @@
     <application
         android:label="example"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">
-    <activity
+        android:icon="@mipmap/ic_launcher">
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
@@ -25,7 +24,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
         </activity>
 
         <activity android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
