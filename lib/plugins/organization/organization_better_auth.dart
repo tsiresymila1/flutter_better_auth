@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_better_auth/core/api/models/result/better_error.dart';
 import 'package:flutter_better_auth/core/api/models/result/result.dart';
-import 'package:flutter_better_auth/plugins/admin/models/permission/check_permission_response.dart';
+import 'package:flutter_better_auth/plugins/admin/models/admin_models.dart';
 
 import 'models/invitation_with_member_response.dart';
 import 'models/organization_create_role_response.dart';

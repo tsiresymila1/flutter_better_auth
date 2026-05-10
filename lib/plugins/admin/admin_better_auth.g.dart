@@ -8,7 +8,7 @@ part of 'admin_better_auth.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main,avoid_redundant_argument_values
 
 class _AdminBetterAuth implements AdminBetterAuth {
   _AdminBetterAuth(this._dio, {this.baseUrl, this.errorLogger});
@@ -19,7 +19,7 @@ class _AdminBetterAuth implements AdminBetterAuth {
 
   final ParseErrorLogger? errorLogger;
 
-  Future<HttpResponse<UserResponse>> _setRole({
+  Future<HttpResponse<AdminUserResponse>> _setRole({
     required String userId,
     required String role,
   }) async {
@@ -27,7 +27,7 @@ class _AdminBetterAuth implements AdminBetterAuth {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{'userId': userId, 'role': role};
-    final _options = _setStreamType<Result<UserResponse>>(
+    final _options = _setStreamType<Result<AdminUserResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -38,9 +38,9 @@ class _AdminBetterAuth implements AdminBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserResponse _value;
+    late AdminUserResponse _value;
     try {
-      _value = UserResponse.fromJson(_result.data!);
+      _value = AdminUserResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -50,35 +50,69 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> setRole({
+  Future<Result<AdminUserResponse>> setRole({
     required String userId,
     required String role,
   }) {
-    return BetterAuthCallAdapter<UserResponse>().adapt(
+    return BetterAuthCallAdapter<AdminUserResponse>().adapt(
       () => _setRole(userId: userId, role: role),
     );
   }
 
-  Future<HttpResponse<UserResponse>> _createUser({
-    required String name,
+  Future<HttpResponse<AdminUserResponse>> _getUser({required String id}) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'id': id};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<Result<AdminUserResponse>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/get-user',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late AdminUserResponse _value;
+    try {
+      _value = AdminUserResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<AdminUserResponse>> getUser({required String id}) {
+    return BetterAuthCallAdapter<AdminUserResponse>().adapt(
+      () => _getUser(id: id),
+    );
+  }
+
+  Future<HttpResponse<AdminUserResponse>> _createUser({
     required String email,
     required String password,
+    required String name,
     String? role,
-    String? data,
+    Map<String, dynamic>? data,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{
-      'name': name,
       'email': email,
       'password': password,
+      'name': name,
       'role': role,
       'data': data,
     };
     _data.removeWhere((k, v) => v == null);
-    final _options = _setStreamType<Result<UserResponse>>(
+    final _options = _setStreamType<Result<AdminUserResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -89,9 +123,9 @@ class _AdminBetterAuth implements AdminBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserResponse _value;
+    late AdminUserResponse _value;
     try {
-      _value = UserResponse.fromJson(_result.data!);
+      _value = AdminUserResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -101,30 +135,83 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> createUser({
-    required String name,
+  Future<Result<AdminUserResponse>> createUser({
     required String email,
     required String password,
+    required String name,
     String? role,
-    String? data,
+    Map<String, dynamic>? data,
   }) {
-    return BetterAuthCallAdapter<UserResponse>().adapt(
+    return BetterAuthCallAdapter<AdminUserResponse>().adapt(
       () => _createUser(
-        name: name,
         email: email,
         password: password,
+        name: name,
         role: role,
         data: data,
       ),
     );
   }
 
-  Future<HttpResponse<UserResponse>> _listUsers() async {
+  Future<HttpResponse<AdminUserResponse>> _updateUser({
+    required String userId,
+    required Map<String, dynamic> data,
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{'userId': userId, 'data': data};
+    final _options = _setStreamType<Result<AdminUserResponse>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/update-user',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late AdminUserResponse _value;
+    try {
+      _value = AdminUserResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<AdminUserResponse>> updateUser({
+    required String userId,
+    required Map<String, dynamic> data,
+  }) {
+    return BetterAuthCallAdapter<AdminUserResponse>().adapt(
+      () => _updateUser(userId: userId, data: data),
+    );
+  }
+
+  Future<HttpResponse<AdminUserListResponse>> _listUsers({
+    int? limit,
+    int? offset,
+    String? searchValue,
+    String? sortBy,
+    String? sortDirection,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'limit': limit,
+      r'offset': offset,
+      r'searchValue': searchValue,
+      r'sortBy': sortBy,
+      r'sortDirection': sortDirection,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<Result<UserResponse>>(
+    final _options = _setStreamType<Result<AdminUserListResponse>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -135,9 +222,9 @@ class _AdminBetterAuth implements AdminBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserResponse _value;
+    late AdminUserListResponse _value;
     try {
-      _value = UserResponse.fromJson(_result.data!);
+      _value = AdminUserListResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -147,18 +234,32 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> listUsers() {
-    return BetterAuthCallAdapter<UserResponse>().adapt(() => _listUsers());
+  Future<Result<AdminUserListResponse>> listUsers({
+    int? limit,
+    int? offset,
+    String? searchValue,
+    String? sortBy,
+    String? sortDirection,
+  }) {
+    return BetterAuthCallAdapter<AdminUserListResponse>().adapt(
+      () => _listUsers(
+        limit: limit,
+        offset: offset,
+        searchValue: searchValue,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+      ),
+    );
   }
 
-  Future<HttpResponse<UserResponse>> _listUserSessions({
+  Future<HttpResponse<AdminSessionListResponse>> _listUserSessions({
     required String userId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{'userId': userId};
-    final _options = _setStreamType<Result<UserResponse>>(
+    final _options = _setStreamType<Result<AdminSessionListResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -169,9 +270,9 @@ class _AdminBetterAuth implements AdminBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserResponse _value;
+    late AdminSessionListResponse _value;
     try {
-      _value = UserResponse.fromJson(_result.data!);
+      _value = AdminSessionListResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -181,52 +282,18 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> listUserSessions({required String userId}) {
-    return BetterAuthCallAdapter<UserResponse>().adapt(
+  Future<Result<AdminSessionListResponse>> listUserSessions({
+    required String userId,
+  }) {
+    return BetterAuthCallAdapter<AdminSessionListResponse>().adapt(
       () => _listUserSessions(userId: userId),
     );
   }
 
-  Future<HttpResponse<UserResponse>> _unBanUser({
+  Future<HttpResponse<AdminUserResponse>> _banUser({
     required String userId,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{'userId': userId};
-    final _options = _setStreamType<Result<UserResponse>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/admin/unban-user',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserResponse _value;
-    try {
-      _value = UserResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    final httpResponse = HttpResponse(_value, _result);
-    return httpResponse;
-  }
-
-  @override
-  Future<Result<UserResponse>> unBanUser({required String userId}) {
-    return BetterAuthCallAdapter<UserResponse>().adapt(
-      () => _unBanUser(userId: userId),
-    );
-  }
-
-  Future<HttpResponse<UserResponse>> _banUser({
-    required String userId,
-    String banReason = "",
-    String? banExpiresIn,
+    String? banReason,
+    int? banExpiresIn,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -238,7 +305,7 @@ class _AdminBetterAuth implements AdminBetterAuth {
       'banExpiresIn': banExpiresIn,
     };
     _data.removeWhere((k, v) => v == null);
-    final _options = _setStreamType<Result<UserResponse>>(
+    final _options = _setStreamType<Result<AdminUserResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -249,9 +316,9 @@ class _AdminBetterAuth implements AdminBetterAuth {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserResponse _value;
+    late AdminUserResponse _value;
     try {
-      _value = UserResponse.fromJson(_result.data!);
+      _value = AdminUserResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -261,17 +328,53 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<UserResponse>> banUser({
+  Future<Result<AdminUserResponse>> banUser({
     required String userId,
-    String banReason = "",
-    String? banExpiresIn,
+    String? banReason,
+    int? banExpiresIn,
   }) {
-    return BetterAuthCallAdapter<UserResponse>().adapt(
+    return BetterAuthCallAdapter<AdminUserResponse>().adapt(
       () => _banUser(
         userId: userId,
         banReason: banReason,
         banExpiresIn: banExpiresIn,
       ),
+    );
+  }
+
+  Future<HttpResponse<AdminUserResponse>> _unbanUser({
+    required String userId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{'userId': userId};
+    final _options = _setStreamType<Result<AdminUserResponse>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/unban-user',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late AdminUserResponse _value;
+    try {
+      _value = AdminUserResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<AdminUserResponse>> unbanUser({required String userId}) {
+    return BetterAuthCallAdapter<AdminUserResponse>().adapt(
+      () => _unbanUser(userId: userId),
     );
   }
 
@@ -311,134 +414,16 @@ class _AdminBetterAuth implements AdminBetterAuth {
     );
   }
 
-  Future<HttpResponse<SuccessResponse>> _stopImpersonating({
-    required String userId,
-  }) async {
+  Future<HttpResponse<StatusResponse>> _stopImpersonating() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{'userId': userId};
-    final _options = _setStreamType<Result<SuccessResponse>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/admin/stop-impersonating',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late SuccessResponse _value;
-    try {
-      _value = SuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    final httpResponse = HttpResponse(_value, _result);
-    return httpResponse;
-  }
-
-  @override
-  Future<Result<SuccessResponse>> stopImpersonating({required String userId}) {
-    return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _stopImpersonating(userId: userId),
-    );
-  }
-
-  Future<HttpResponse<SuccessResponse>> _removeUserSessions({
-    required Map<String, dynamic> body,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(body);
-    _data.removeWhere((k, v) => v == null);
-    final _options = _setStreamType<Result<SuccessResponse>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/admin/revoke-user-sessions',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late SuccessResponse _value;
-    try {
-      _value = SuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    final httpResponse = HttpResponse(_value, _result);
-    return httpResponse;
-  }
-
-  @override
-  Future<Result<SuccessResponse>> removeUserSessions({
-    required Map<String, dynamic> body,
-  }) {
-    return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _removeUserSessions(body: body),
-    );
-  }
-
-  Future<HttpResponse<SuccessResponse>> _removeUser({
-    required String userId,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{'userId': userId};
-    final _options = _setStreamType<Result<SuccessResponse>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/admin/remove-user',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late SuccessResponse _value;
-    try {
-      _value = SuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    final httpResponse = HttpResponse(_value, _result);
-    return httpResponse;
-  }
-
-  @override
-  Future<Result<SuccessResponse>> removeUser({required String userId}) {
-    return BetterAuthCallAdapter<SuccessResponse>().adapt(
-      () => _removeUser(userId: userId),
-    );
-  }
-
-  Future<HttpResponse<StatusResponse>> _setUserPassword({
-    required String newPassword,
-    required String userId,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{
-      'newPassword': newPassword,
-      'userId': userId,
-    };
+    const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/admin/set-user-password',
+            '/admin/stop-impersonating',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -457,36 +442,34 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<StatusResponse>> setUserPassword({
-    required String newPassword,
-    required String userId,
-  }) {
+  Future<Result<StatusResponse>> stopImpersonating() {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _setUserPassword(newPassword: newPassword, userId: userId),
+      () => _stopImpersonating(),
     );
   }
 
-  Future<HttpResponse<CheckPermissionResponse>> _hasPermission({
-    required Map<String, dynamic> permissions,
+  Future<HttpResponse<StatusResponse>> _revokeUserSession({
+    required String sessionId,
+    required String userId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{'permissions': permissions};
-    final _options = _setStreamType<Result<CheckPermissionResponse>>(
+    final _data = <String, dynamic>{'sessionId': sessionId, 'userId': userId};
+    final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/admin/has-permission',
+            '/admin/revoke-user-session',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late CheckPermissionResponse _value;
+    late StatusResponse _value;
     try {
-      _value = CheckPermissionResponse.fromJson(_result.data!);
+      _value = StatusResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -496,11 +479,84 @@ class _AdminBetterAuth implements AdminBetterAuth {
   }
 
   @override
-  Future<Result<CheckPermissionResponse>> hasPermission({
-    required Map<String, dynamic> permissions,
+  Future<Result<StatusResponse>> revokeUserSession({
+    required String sessionId,
+    required String userId,
   }) {
-    return BetterAuthCallAdapter<CheckPermissionResponse>().adapt(
-      () => _hasPermission(permissions: permissions),
+    return BetterAuthCallAdapter<StatusResponse>().adapt(
+      () => _revokeUserSession(sessionId: sessionId, userId: userId),
+    );
+  }
+
+  Future<HttpResponse<StatusResponse>> _revokeUserSessions({
+    required String userId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{'userId': userId};
+    final _options = _setStreamType<Result<StatusResponse>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/revoke-user-sessions',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late StatusResponse _value;
+    try {
+      _value = StatusResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<StatusResponse>> revokeUserSessions({required String userId}) {
+    return BetterAuthCallAdapter<StatusResponse>().adapt(
+      () => _revokeUserSessions(userId: userId),
+    );
+  }
+
+  Future<HttpResponse<StatusResponse>> _removeUser({
+    required String userId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{'userId': userId};
+    final _options = _setStreamType<Result<StatusResponse>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/admin/remove-user',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late StatusResponse _value;
+    try {
+      _value = StatusResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<Result<StatusResponse>> removeUser({required String userId}) {
+    return BetterAuthCallAdapter<StatusResponse>().adapt(
+      () => _removeUser(userId: userId),
     );
   }
 

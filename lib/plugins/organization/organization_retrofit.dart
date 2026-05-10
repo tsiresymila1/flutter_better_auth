@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_better_auth/core/api/adapter.dart';
 import 'package:flutter_better_auth/core/api/models/result/result.dart';
-import 'package:flutter_better_auth/plugins/admin/models/permission/check_permission_response.dart';
+import 'package:flutter_better_auth/plugins/admin/models/admin_models.dart';
 import 'package:retrofit/retrofit.dart';
 
 import 'models/invitation_with_member_response.dart';
