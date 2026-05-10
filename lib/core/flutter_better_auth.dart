@@ -48,7 +48,6 @@ class FlutterBetterAuth {
               HttpHeaders.userAgentHeader: 'FlutterBetterAuth/1.0.0',
               'flutter-origin': 'flutter://',
               'expo-origin': 'exp://',
-              'x-skip-oauth-proxy': true,
             },
             validateStatus: (status) => status != null && status < 300,
           ),

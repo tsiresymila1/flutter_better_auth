@@ -9,6 +9,7 @@ import '../../../flutter_better_auth.dart';
 import '../../better_auth_client.dart';
 import '../../models/result/better_error.dart';
 import '../../models/result/result.dart';
+import '../social/social_extension.dart';
 import 'models/social/sign_in_social_response.dart';
 import 'models/social/social_id_token_body.dart';
 import 'sign_in_better_auth.dart';
@@ -26,43 +27,27 @@ extension SignInSocialExtension on SignInBetterAuth {
     String? requestSignUp,
     String? loginHint,
   }) async {
+    final normalizedCallbackURL = _resolveMobileCallbackURL(
+      callbackURL,
+      callbackUrlScheme: callbackUrlScheme,
+      provideDefault: !kIsWeb && idToken == null,
+    );
+    final normalizedNewUserCallbackURL = _resolveMobileCallbackURL(
+      newUserCallbackURL,
+      callbackUrlScheme: callbackUrlScheme,
+    );
+    final normalizedErrorCallbackURL = _resolveMobileCallbackURL(
+      errorCallbackURL,
+      callbackUrlScheme: callbackUrlScheme,
+    );
 
     final res = await socialAuth(
       provider: provider,
-      callbackURL:
-          idToken != null
-              ? callbackURL
-              : callbackURL != null
-              ? !kIsWeb
-                  ? Uri.parse(
-                    callbackURL,
-                  ).replace(scheme: callbackUrlScheme).toString()
-                  : callbackURL
-              : !kIsWeb && idToken != null
-              ? "${callbackUrlScheme ?? 'https'}://auth-callback"
-              : null,
-
+      callbackURL: idToken != null ? callbackURL : normalizedCallbackURL,
       newUserCallbackURL:
-          idToken != null
-              ? newUserCallbackURL
-              : newUserCallbackURL != null
-              ? !kIsWeb
-                  ? Uri.parse(
-                    newUserCallbackURL,
-                  ).replace(scheme: callbackUrlScheme).toString()
-                  : newUserCallbackURL
-              : null,
-
+          idToken != null ? newUserCallbackURL : normalizedNewUserCallbackURL,
       errorCallbackURL:
-          idToken != null
-              ? errorCallbackURL
-              : errorCallbackURL != null
-              ? !kIsWeb
-                  ? Uri.parse(
-                    errorCallbackURL,
-                  ).replace(scheme: callbackUrlScheme).toString()
-                  : errorCallbackURL
-              : null,
+          idToken != null ? errorCallbackURL : normalizedErrorCallbackURL,
       disableRedirect: disableRedirect,
       scopes: scopes,
       idToken: idToken,
@@ -72,12 +57,13 @@ extension SignInSocialExtension on SignInBetterAuth {
     if (idToken != null) {
       return res;
     }
-    if (res.data != null && callbackUrlScheme != null) {
+    final effectiveCallbackScheme =
+        callbackUrlScheme ?? _extractSchemeFromUrl(normalizedCallbackURL);
+    if (res.data != null && effectiveCallbackScheme != null) {
       try {
-        final newUrl = Uri.parse(res.data!.url).toString().replaceAll(FlutterBetterAuth.baseUrl, "$callbackUrlScheme://auth-callback");
         final result = await FlutterWebAuth2.authenticate(
-          url: "${FlutterBetterAuth.baseUrl}/expo-authorization-proxy?authorizationURL=${Uri.encodeComponent(newUrl)}",
-          callbackUrlScheme: callbackUrlScheme,
+          url: res.data!.url,
+          callbackUrlScheme: effectiveCallbackScheme,
         );
         final url = Uri.tryParse(result);
         final cookie = url?.queryParameters['cookie'];
@@ -94,17 +80,26 @@ extension SignInSocialExtension on SignInBetterAuth {
             Uri.parse(FlutterBetterAuth.baseUrl).host,
             cookies,
           );
+        } else {
+          final code = url?.queryParameters['code'];
+          final state = url?.queryParameters['state'];
+          if (code != null && code.isNotEmpty) {
+            await FlutterBetterAuth.client.social.callback(
+              provider: provider,
+              code: code,
+              state: state,
+            );
+          }
         }
       } on PlatformException catch (e) {
         return Result.err(
           BetterError(
             code: e.code,
-            message: e.message?? "Error",
+            message: e.message ?? "Error",
             stack: e.stacktrace,
           ),
         );
-      } 
-      catch (e) {
+      } catch (e) {
         return Result.err(
           BetterError(
             code: "ERROR",
@@ -123,4 +118,45 @@ extension SignInBetterAuthExtension on BetterAuthClient {
     FlutterBetterAuth.dioClient,
     baseUrl: FlutterBetterAuth.baseUrl,
   );
+}
+
+String? _resolveMobileCallbackURL(
+  String? url, {
+  required String? callbackUrlScheme,
+  bool provideDefault = false,
+}) {
+  if (kIsWeb) {
+    return url;
+  }
+  if (url == null || url.isEmpty) {
+    if (provideDefault &&
+        callbackUrlScheme != null &&
+        callbackUrlScheme.isNotEmpty) {
+      return '$callbackUrlScheme://auth-callback';
+    }
+    return url;
+  }
+  final parsed = Uri.parse(url);
+  if (parsed.hasScheme ||
+      callbackUrlScheme == null ||
+      callbackUrlScheme.isEmpty) {
+    return url;
+  }
+  final normalizedPath = url.startsWith('/') ? url : '/$url';
+  return Uri(
+    scheme: callbackUrlScheme,
+    host: 'auth-callback',
+    path: normalizedPath,
+  ).toString();
+}
+
+String? _extractSchemeFromUrl(String? url) {
+  if (url == null || url.isEmpty) {
+    return null;
+  }
+  final parsed = Uri.tryParse(url);
+  if (parsed == null || !parsed.hasScheme || parsed.scheme.isEmpty) {
+    return null;
+  }
+  return parsed.scheme;
 }
