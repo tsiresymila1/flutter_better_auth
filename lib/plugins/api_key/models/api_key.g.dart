@@ -14,23 +14,19 @@ _ApiKey _$ApiKeyFromJson(Map<String, dynamic> json) => _ApiKey(
   key: json['key'] as String?,
   userId: json['userId'] as String,
   enabled: json['enabled'] as bool? ?? true,
-  expiresAt:
-      json['expiresAt'] == null
-          ? null
-          : DateTime.parse(json['expiresAt'] as String),
+  expiresAt: json['expiresAt'] == null
+      ? null
+      : DateTime.parse(json['expiresAt'] as String),
   createdAt: DateTime.parse(json['createdAt'] as String),
-  updatedAt:
-      json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
-  lastRefillAt:
-      json['lastRefillAt'] == null
-          ? null
-          : DateTime.parse(json['lastRefillAt'] as String),
-  lastRequest:
-      json['lastRequest'] == null
-          ? null
-          : DateTime.parse(json['lastRequest'] as String),
+  updatedAt: json['updatedAt'] == null
+      ? null
+      : DateTime.parse(json['updatedAt'] as String),
+  lastRefillAt: json['lastRefillAt'] == null
+      ? null
+      : DateTime.parse(json['lastRefillAt'] as String),
+  lastRequest: json['lastRequest'] == null
+      ? null
+      : DateTime.parse(json['lastRequest'] as String),
   metadata: json['metadata'] as Map<String, dynamic>?,
   rateLimitMax: (json['rateLimitMax'] as num?)?.toDouble(),
   rateLimitTimeWindow: (json['rateLimitTimeWindow'] as num?)?.toDouble(),

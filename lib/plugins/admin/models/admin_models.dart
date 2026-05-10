@@ -35,3 +35,14 @@ abstract class AdminSessionListResponse with _$AdminSessionListResponse {
     factory AdminSessionListResponse.fromJson(Map<String, dynamic> json) =>
         _$AdminSessionListResponseFromJson(json);
 }
+
+@freezed
+abstract class CheckPermissionResponse with _$CheckPermissionResponse {
+  const factory CheckPermissionResponse({
+    required bool success,
+    String? error,
+  }) = _CheckPermissionResponse;
+
+  factory CheckPermissionResponse.fromJson(Map<String, dynamic> json) =>
+      _$CheckPermissionResponseFromJson(json);
+}
