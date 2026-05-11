@@ -5,7 +5,6 @@ import { nextCookies } from "better-auth/next-js";
 import {
     admin,
     anonymous,
-    apiKey,
     bearer,
     emailOTP,
     jwt,
@@ -110,7 +109,6 @@ export const auth = betterAuth({
             },
         }),
         admin(),
-        apiKey(),
         passkey(),
         organization(),
         bearer(),
@@ -121,5 +119,4 @@ export const auth = betterAuth({
     
     ],
 });
-
 
