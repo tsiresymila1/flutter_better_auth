@@ -46,10 +46,41 @@ import 'package:flutter_better_auth/flutter_better_auth.dart';
 
 void main() async {
    WidgetsFlutterBinding.ensureInitialized();
-   await FlutterBetterAuth.initialize(url: 'api_url');
+   await FlutterBetterAuth.initialize(
+      url: 'api_url',
+      scheme: 'myapp',
+   );
    runApp(const MyApp());
 }
 ```
+
+### Native social authentication
+
+Native OAuth follows the same authorization-proxy flow as Better Auth's
+official Expo client. Configure the Expo server plugin and trust your app's
+deep-link origin:
+
+```ts
+import { expo } from "@better-auth/expo";
+
+export const auth = betterAuth({
+  trustedOrigins: ["myapp://"],
+  plugins: [expo()],
+});
+```
+
+Pass the matching scheme to the Flutter client:
+
+```dart
+await FlutterBetterAuth.initialize(
+  url: 'https://example.com/api/auth',
+  scheme: 'myapp',
+);
+```
+
+The client sends `expo-origin`, opens `/expo-authorization-proxy`, forwards the
+stored OAuth state, and persists the session cookies returned through the deep
+link callback.
 
 Wrap your `MaterialApp` with `BetterAuthProvider`:
 
@@ -169,6 +200,7 @@ void main() async {
    WidgetsFlutterBinding.ensureInitialized();
    await FlutterBetterAuth.initialize(
       url: 'your_base_url/api/auth',
+      scheme: 'myapp',
    );
    runApp(const MyApp());
 }

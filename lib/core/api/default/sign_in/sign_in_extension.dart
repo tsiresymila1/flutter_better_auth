@@ -27,27 +27,30 @@ extension SignInSocialExtension on SignInBetterAuth {
     String? requestSignUp,
     String? loginHint,
   }) async {
+    final effectiveScheme = callbackUrlScheme ?? FlutterBetterAuth.appScheme;
     final normalizedCallbackURL = _resolveMobileCallbackURL(
       callbackURL,
-      callbackUrlScheme: callbackUrlScheme,
+      callbackUrlScheme: effectiveScheme,
       provideDefault: !kIsWeb && idToken == null,
     );
     final normalizedNewUserCallbackURL = _resolveMobileCallbackURL(
       newUserCallbackURL,
-      callbackUrlScheme: callbackUrlScheme,
+      callbackUrlScheme: effectiveScheme,
     );
     final normalizedErrorCallbackURL = _resolveMobileCallbackURL(
       errorCallbackURL,
-      callbackUrlScheme: callbackUrlScheme,
+      callbackUrlScheme: effectiveScheme,
     );
 
     final res = await socialAuth(
       provider: provider,
       callbackURL: idToken != null ? callbackURL : normalizedCallbackURL,
-      newUserCallbackURL:
-          idToken != null ? newUserCallbackURL : normalizedNewUserCallbackURL,
-      errorCallbackURL:
-          idToken != null ? errorCallbackURL : normalizedErrorCallbackURL,
+      newUserCallbackURL: idToken != null
+          ? newUserCallbackURL
+          : normalizedNewUserCallbackURL,
+      errorCallbackURL: idToken != null
+          ? errorCallbackURL
+          : normalizedErrorCallbackURL,
       disableRedirect: disableRedirect,
       scopes: scopes,
       idToken: idToken,
@@ -58,28 +61,35 @@ extension SignInSocialExtension on SignInBetterAuth {
       return res;
     }
     final effectiveCallbackScheme =
-        callbackUrlScheme ?? _extractSchemeFromUrl(normalizedCallbackURL);
+        effectiveScheme ?? _extractSchemeFromUrl(normalizedCallbackURL);
     if (res.data != null && effectiveCallbackScheme != null) {
       try {
+        final baseUri = Uri.parse(FlutterBetterAuth.baseUrl);
+        final storedCookies = await FlutterBetterAuth.cookieJar.loadForRequest(
+          baseUri,
+        );
+        final oauthState = findBetterAuthOAuthState(storedCookies);
+        final proxyUrl = buildBetterAuthOAuthProxyUri(
+          baseUrl: FlutterBetterAuth.baseUrl,
+          authorizationUrl: res.data!.url,
+          oauthState: oauthState,
+        );
         final result = await FlutterWebAuth2.authenticate(
-          url: res.data!.url,
+          url: proxyUrl.toString(),
           callbackUrlScheme: effectiveCallbackScheme,
         );
         final url = Uri.tryParse(result);
         final cookie = url?.queryParameters['cookie'];
         if (cookie != null && cookie.isNotEmpty) {
-          final List<Cookie> cookies =
-              [cookie]
-                  .map((str) => str.split(RegExp('(?<=)(,)(?=[^;]+?=)')))
-                  .expand((cookie) => cookie)
-                  .where((cookie) => cookie.isNotEmpty)
-                  .map((str) => Cookie.fromSetCookieValue(str))
-                  .toList();
+          final List<Cookie> cookies = [cookie]
+              .map((str) => str.split(RegExp('(?<=)(,)(?=[^;]+?=)')))
+              .expand((cookie) => cookie)
+              .where((cookie) => cookie.isNotEmpty)
+              .map((str) => Cookie.fromSetCookieValue(str))
+              .toList();
 
-          await FlutterBetterAuth.storage?.saveCookies(
-            Uri.parse(FlutterBetterAuth.baseUrl).host,
-            cookies,
-          );
+          await FlutterBetterAuth.cookieJar.saveFromResponse(baseUri, cookies);
+          await FlutterBetterAuth.refreshSession();
         } else {
           final code = url?.queryParameters['code'];
           final state = url?.queryParameters['state'];
@@ -89,6 +99,7 @@ extension SignInSocialExtension on SignInBetterAuth {
               code: code,
               state: state,
             );
+            await FlutterBetterAuth.refreshSession();
           }
         }
       } on PlatformException catch (e) {
@@ -111,6 +122,33 @@ extension SignInSocialExtension on SignInBetterAuth {
     }
     return res;
   }
+}
+
+Uri buildBetterAuthOAuthProxyUri({
+  required String baseUrl,
+  required String authorizationUrl,
+  String? oauthState,
+}) {
+  final normalizedBaseUrl = baseUrl.endsWith('/')
+      ? baseUrl.substring(0, baseUrl.length - 1)
+      : baseUrl;
+  return Uri.parse('$normalizedBaseUrl/expo-authorization-proxy').replace(
+    queryParameters: {
+      'authorizationURL': authorizationUrl,
+      if (oauthState != null) 'oauthState': oauthState,
+    },
+  );
+}
+
+String? findBetterAuthOAuthState(List<Cookie> cookies) {
+  for (final cookie in cookies) {
+    if (cookie.name == 'oauth_state' ||
+        cookie.name.endsWith('.oauth_state') ||
+        cookie.name.endsWith('-oauth_state')) {
+      return cookie.value;
+    }
+  }
+  return null;
 }
 
 extension SignInBetterAuthExtension on BetterAuthClient {

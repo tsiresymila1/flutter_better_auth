@@ -1,41 +1,56 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_better_auth/core/api/better_auth_client.dart';
 import 'package:flutter_better_auth/core/storage/custom_persist_cookie_jar.dart';
-import 'package:flutter_better_auth/core/storage/hive_storage.dart';
-import 'package:flutter_better_auth/core/storage/storage.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 
 import 'api/interceptor.dart';
 import 'storage/memory_storage.dart';
 
 class FlutterBetterAuth {
-  static final FlutterBetterAuth _instance = FlutterBetterAuth._internal();
-  late final BetterAuthClient _client;
+  static BetterAuthClient? _client;
   static bool _initialized = false;
+  static _BetterAuthLifecycleObserver? _lifecycleObserver;
 
   static late String baseUrl;
   static late Dio dioClient;
   static late StorageInterface? storage;
-
-  FlutterBetterAuth._internal() {
-    _client = BetterAuthClient(dioClient, baseUrl: baseUrl);
-  }
+  static late CustomPersistCookieJar cookieJar;
+  static String? appScheme;
+  static StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+  static bool _wasOnline = true;
 
   static Future<void> initialize({
     required String url,
     Dio? dio,
     StorageInterface? store,
+
+    /// Native deep-link scheme, for example `myapp`.
+    ///
+    /// Required for native social authentication. It is sent to Better Auth as
+    /// `expo-origin` and used as the default OAuth callback scheme.
+    String? scheme,
+
+    /// Refresh the auth stream whenever the app returns to the foreground.
+    bool refreshSessionOnAppResume = true,
+
+    /// Refresh the auth stream whenever the device regains network
+    /// connectivity (offline -> online transition). Mirrors the Expo
+    /// online-manager behavior.
+    bool refreshSessionOnReconnect = true,
   }) async {
     if (_initialized) return;
     baseUrl = url;
+    appScheme = scheme;
     if (store == null && !kIsWeb) {
-      await HiveStorage.init();
-      storage = HiveStorage();
+      // Encrypted, chunked cookie persistence by default on native platforms.
+      storage = SecureStorage();
     } else {
       storage = store;
     }
@@ -46,13 +61,24 @@ class FlutterBetterAuth {
             headers: {
               HttpHeaders.contentTypeHeader: 'application/json',
               HttpHeaders.userAgentHeader: 'FlutterBetterAuth/1.0.0',
-              'flutter-origin': 'flutter://',
-              'expo-origin': 'exp://',
             },
             validateStatus: (status) => status != null && status < 300,
           ),
         );
-    final cookieJar = CustomPersistCookieJar(
+    final origin = scheme == null || scheme.isEmpty ? null : '$scheme://';
+    dioClient.options.headers.putIfAbsent(
+      HttpHeaders.contentTypeHeader,
+      () => 'application/json',
+    );
+    dioClient.options.headers.putIfAbsent(
+      HttpHeaders.userAgentHeader,
+      () => 'FlutterBetterAuth/1.0.0',
+    );
+    dioClient.options.headers['x-skip-oauth-proxy'] = 'true';
+    if (origin != null) {
+      dioClient.options.headers['expo-origin'] = origin;
+    }
+    cookieJar = CustomPersistCookieJar(
       store: storage,
       storage: MemoryStorage(),
     );
@@ -68,8 +94,9 @@ class FlutterBetterAuth {
                 path.contains('/update-user') ||
                 path.contains('/change-email') ||
                 path.contains('/change-password')) {
-              // await _refreshSession();
+              unawaited(_refreshSession());
             } else if (path.contains('/sign-out')) {
+              await cookieJar.clearFor(Uri.parse(baseUrl));
               _authStreamController.add(null);
             }
           }
@@ -83,11 +110,36 @@ class FlutterBetterAuth {
         },
       ),
     );
+    _client = BetterAuthClient(dioClient, baseUrl: baseUrl);
     _initialized = true;
+    if (refreshSessionOnAppResume) {
+      _lifecycleObserver = _BetterAuthLifecycleObserver();
+      WidgetsBinding.instance.addObserver(_lifecycleObserver!);
+    }
+    if (refreshSessionOnReconnect && !kIsWeb) {
+      _wasOnline = true;
+      _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
+        final online = results.any((r) => r != ConnectivityResult.none);
+        // Only refetch on the offline -> online edge, not every change.
+        if (online && !_wasOnline) {
+          unawaited(_refreshSession());
+        }
+        _wasOnline = online;
+      });
+    }
   }
 
   @visibleForTesting
   static void reset() {
+    final observer = _lifecycleObserver;
+    if (observer != null) {
+      WidgetsBinding.instance.removeObserver(observer);
+    }
+    _lifecycleObserver = null;
+    unawaited(_connectivitySub?.cancel());
+    _connectivitySub = null;
+    _wasOnline = true;
+    _client = null;
     _initialized = false;
   }
 
@@ -106,23 +158,33 @@ class FlutterBetterAuth {
           _authStreamController.add(success?.user);
         },
         err: (error) {
-          _authStreamController.add(null);
+          // The 401 interceptor emits signed-out state. Other errors may be
+          // transient network failures and must not clear the current user.
         },
       );
-    } catch (e) {
-      _authStreamController.add(null);
-    }
+    } catch (_) {}
   }
+
+  static Future<void> refreshSession() => _refreshSession();
 
   static BetterAuthClient get client {
     assert(
       _initialized,
       'FlutterBetterAuth not initialized. Call initialize() first.',
     );
-    return _instance._client;
+    return _client!;
   }
 }
 
 extension OnAuthChangeExtension on BetterAuthClient {
   Stream<User?> get onAuthChange => FlutterBetterAuth._onAuthChange;
+}
+
+class _BetterAuthLifecycleObserver with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(FlutterBetterAuth.refreshSession());
+    }
+  }
 }

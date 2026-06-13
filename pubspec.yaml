@@ -8,11 +8,13 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  connectivity_plus: ^7.1.1
   cookie_jar: ^4.0.9
   dio: ^5.9.2
   dio_cookie_manager: ^3.4.0
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^10.3.1
   flutter_web_auth_2: ^5.0.2
   freezed_annotation: ^3.1.0
   hive_ce: ^2.16.0

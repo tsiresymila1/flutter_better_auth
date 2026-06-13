@@ -17,11 +17,11 @@ class MemoryStorage implements Storage {
 
   @override
   Future<String?> read(String key) async {
-    return data['key'];
+    return data[key] as String?;
   }
 
   @override
   Future<void> write(String key, String value) async {
-    data['key'] = value;
+    data[key] = value;
   }
 }
