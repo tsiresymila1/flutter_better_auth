@@ -3,6 +3,19 @@ import 'package:flutter_better_auth/flutter_better_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'harness/session_header.dart';
+import 'services/google_auth.dart';
+import 'tabs/admin_tab.dart';
+import 'tabs/api_key_tab.dart';
+import 'tabs/auth_tab.dart';
+import 'tabs/email_otp_tab.dart';
+import 'tabs/jwt_ott_tab.dart';
+import 'tabs/organization_tab.dart';
+import 'tabs/passkey_tab.dart';
+import 'tabs/phone_tab.dart';
+import 'tabs/sessions_tab.dart';
+import 'tabs/social_tab.dart';
+import 'tabs/two_factor_tab.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +29,10 @@ void main() async {
     // server's trustedOrigins.
     scheme: 'myapp',
   );
+  await GoogleAuthService.init(
+    serverClientId: dotenv.env['GOOGLE_SERVER_CLIENT_ID'],
+    clientId: dotenv.env['GOOGLE_IOS_CLIENT_ID'],
+  );
   runApp(const MyApp());
 }
 
@@ -26,108 +43,63 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BetterAuthProvider(
       child: ShadApp(
-        title: 'BetterAuth',
+        title: 'BetterAuth Harness',
         darkTheme: ShadThemeData(
           brightness: Brightness.dark,
-          colorScheme: ShadSlateColorScheme.dark(),
+          colorScheme: ShadNeutralColorScheme.dark(),
         ),
         theme: ShadThemeData(
           brightness: Brightness.light,
-          colorScheme: ShadSlateColorScheme.light(),
+          colorScheme: ShadNeutralColorScheme.light(),
         ),
         themeMode: ThemeMode.dark,
-        home: const MyHomePage(title: 'Better Auth'),
+        home: const HomeScreen(),
       ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: BetterAuthConsumer(
-        builder: (context, client) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 8,
-              children: <Widget>[
-                FilledButton(
-                  onPressed: () async {
-                    final result = await client.signIn.email(
-                      email: "test@mail.com",
-                      password: "123456788",
-                    );
-                    if (result.data != null) {
-                      debugPrint(result.data.toString());
-                    } else {
-                      debugPrint(result.error?.message);
-                    }
-                  },
-                  child: Text("Sign-in"),
-                ),
-
-                FilledButton(
-                  onPressed: () async {
-                    final result = await client.getSession();
-                    if (result.data != null) {
-                      debugPrint(result.data.toString());
-                    } else {
-                      debugPrint(result.error?.message);
-                    }
-                  },
-                  child: Text("GetSession"),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    client.signOut();
-                  },
-                  child: Text("SignOut"),
-                ),
-                FilledButton(
-                  onPressed: () async {
-                    await client.signIn.social(
-                      provider: 'github',
-                      callbackUrlScheme: "myapp",
-                    );
-                  },
-                  child: Text("Github"),
-                ),
-
-                FilledButton(
-                  onPressed: () async {
-                    final result = await client.signUp.email(
-                      name: "test",
-                      email: "test@mail.com",
-                      password: "123456788",
-                    );
-                    if (result.data != null) {
-                      debugPrint(result.data.toString());
-                    } else {
-                      debugPrint(result.error?.message);
-                    }
-                  },
-                  child: Text("SignUp"),
+    return BetterAuthConsumer(
+      builder: (context, client) {
+        final tabs = <(String, Widget)>[
+          ('Auth', const AuthTab()),
+          ('Sessions', const SessionsTab()),
+          ('Social', const SocialTab()),
+          ('2FA', const TwoFactorTab()),
+          ('Admin', const AdminTab()),
+          ('Org', const OrganizationTab()),
+          ('API Key', const ApiKeyTab()),
+          ('Passkey', const PasskeyTab()),
+          ('Phone', const PhoneTab()),
+          ('Email OTP', const EmailOtpTab()),
+          ('JWT / OTT', const JwtOttTab()),
+        ];
+        return DefaultTabController(
+          length: tabs.length,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Better Auth Harness'),
+              bottom: TabBar(
+                isScrollable: true,
+                tabs: [for (final tab in tabs) Tab(text: tab.$1)],
+              ),
+            ),
+            body: Column(
+              children: [
+                SessionHeader(client: client),
+                Expanded(
+                  child: TabBarView(children: [for (final tab in tabs) tab.$2]),
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

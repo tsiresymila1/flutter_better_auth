@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_better_auth/core/api/better_auth_client.dart';
 import 'package:flutter_better_auth/core/storage/custom_persist_cookie_jar.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 

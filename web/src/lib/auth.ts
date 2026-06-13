@@ -15,7 +15,7 @@ import {
     organization,
     phoneNumber,
     twoFactor,
-    username
+    username,
 } from "better-auth/plugins";
 import Database from "better-sqlite3";
 
@@ -30,15 +30,15 @@ export const auth = betterAuth({
                     httpOnly: false,
                     sameSite: "none", // Required for cross-site auth flows
                     secure: true, // Required if SameSite=None
-                }
+                },
             },
             state: {
                 attributes: {
                     httpOnly: true, // State cookie doesn't need to be JS accessible
                     sameSite: "none", // CRITICAL: Allows cookie to be sent on redirect from Provider
                     secure: true, //
-                }
-            }
+                },
+            },
         },
     },
     account: {
@@ -46,7 +46,7 @@ export const auth = betterAuth({
         // storeAccountCookie: true,
         skipStateCookieCheck: true,
     },
-    database: new Database("auth.db"), 
+    database: new Database("auth.db"),
     secret: process.env.BETTER_AUTH_SECRET,
     emailAndPassword: {
         enabled: true,
@@ -59,19 +59,14 @@ export const auth = betterAuth({
         github: {
             clientId: process.env.GITHUB_CLIENT_ID || "PLACEHOLDER",
             clientSecret: process.env.GITHUB_CLIENT_SECRET || "PLACEHOLDER",
-        
         },
     },
     rateLimit: {
         enabled: true,
     },
-    trustedOrigins: [
-        "*",
-        "myapp://"
-    ],
+    trustedOrigins: ["*", "myapp://"],
 
     plugins: [
-        nextCookies(),
         jwt({
             jwks: {
                 keyPairConfig: {
@@ -82,23 +77,22 @@ export const auth = betterAuth({
             jwt: {
                 expirationTime: "7d",
             },
-            
         }),
         twoFactor(),
         username(),
         anonymous(),
         magicLink({
-            sendMagicLink: async (data, request) => {
+            sendMagicLink: async (data) => {
                 console.log("Magic link to:", data.email, "url:", data.url);
             },
         }),
         phoneNumber({
-            sendOTP: ({ phoneNumber, code }, ctx) => {
+            sendOTP: ({ phoneNumber, code }) => {
                 console.log("OTP sent to:", phoneNumber, "code:", code);
-            }
+            },
         }),
         emailOTP({
-            async sendVerificationOTP({ email, otp, type }) { 
+            async sendVerificationOTP({ email, otp, type }) {
                 if (type === "sign-in") {
                     console.log("OTP sent to:", email, "code:", otp);
                 } else if (type === "email-verification") {
@@ -116,7 +110,6 @@ export const auth = betterAuth({
         openAPI(),
         oneTimeToken(),
         expo(),
-    
+        nextCookies(),
     ],
 });
-

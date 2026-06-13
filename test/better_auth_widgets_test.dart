@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_better_auth/core/api/better_auth_client.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 
 import 'support/fake_cookie_storage.dart';

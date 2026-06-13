@@ -50,6 +50,7 @@ export 'core/api/models/common/user_wrapper/user_wrapper_response.dart';
 export 'core/api/models/result/result.dart';
 export 'core/api/models/result/result_extension.dart';
 export 'core/api/models/session/session_response.dart';
+export 'core/api/better_auth_client.dart';
 export 'core/flutter_better_auth.dart';
 export 'core/storage/storage.dart';
 export 'core/storage/secure_storage.dart';

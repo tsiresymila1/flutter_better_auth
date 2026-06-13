@@ -39,6 +39,7 @@ dependencies:
   logger: ^2.7.0
   flutter_dotenv: ^6.0.1
   shadcn_ui: ^0.43.1
+  google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:
