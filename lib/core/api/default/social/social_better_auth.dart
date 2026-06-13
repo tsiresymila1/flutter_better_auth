@@ -29,7 +29,7 @@ abstract class SocialBetterAuth {
   @POST('/link-social')
   Future<Result<SocialLinkResponse>> link({
     @BodyExtra('callbackURL') String? callbackURL,
-    @BodyExtra('scopes') String? scopes,
+    @BodyExtra('scopes') List<String>? scopes,
     @BodyExtra('provider') required String provider,
   });
 

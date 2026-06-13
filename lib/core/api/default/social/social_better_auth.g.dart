@@ -65,7 +65,7 @@ class _SocialBetterAuth implements SocialBetterAuth {
 
   Future<HttpResponse<SocialLinkResponse>> _link({
     String? callbackURL,
-    String? scopes,
+    List<String>? scopes,
     required String provider,
   }) async {
     final _extra = <String, dynamic>{};
@@ -103,7 +103,7 @@ class _SocialBetterAuth implements SocialBetterAuth {
   @override
   Future<Result<SocialLinkResponse>> link({
     String? callbackURL,
-    String? scopes,
+    List<String>? scopes,
     required String provider,
   }) {
     return BetterAuthCallAdapter<SocialLinkResponse>().adapt(

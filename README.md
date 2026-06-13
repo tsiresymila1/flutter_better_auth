@@ -1,372 +1,525 @@
-# Dart/Flutter BetterAuth
+# Dart/Flutter Better Auth
 
-A Dart/Flutter client for interacting with the Better Auth authentication API, enabling seamless
-integration of secure sign-in, sign-up, and user session management features
-with [Better-Auth](https://www.better-auth.com).
+A Dart/Flutter client for [Better Auth](https://www.better-auth.com) — sign-in, sign-up,
+social/OAuth, session management, and every first-party plugin (2FA, organizations,
+passkeys, API keys, admin, phone, email-OTP, JWT, one-time-token, anonymous).
 
-## Getting Started
+- Encrypted session storage by default (Keychain/Keystore).
+- Reactive auth state (`onAuthChange`) with refresh on app-resume and network-reconnect.
+- Typed request/response models for every endpoint, validated against the server's OpenAPI schema.
 
-Add `flutter_better_auth` to your project dependencies:
+## Contents
+
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Server setup](#server-setup)
+- [Working with `Result`](#working-with-result)
+- [Session & auth state](#session--auth-state)
+- [Email & password](#email--password)
+- [Username](#username)
+- [Anonymous](#anonymous)
+- [Social / OAuth](#social--oauth) · [redirect](#redirect-flow-github-etc) · [idToken (Google)](#idtoken-flow-google-native)
+- [Phone number](#phone-number)
+- [Email OTP](#email-otp)
+- [Two-Factor (2FA)](#two-factor-2fa)
+- [Passkey (WebAuthn)](#passkey-webauthn)
+- [Admin](#admin)
+- [API Key](#api-key)
+- [Organization](#organization)
+- [JWT](#jwt)
+- [One-Time Token](#one-time-token)
+- [Storage](#storage)
+- [Plugin imports](#plugin-imports)
+- [Example app](#example-app)
+
+## Install
 
 ```sh
 flutter pub add flutter_better_auth
 ```
 
-Or manually add it to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-   flutter_better_auth: <latest_version>
-```
-
-## Features
-
-- ✅ Default API support
-- ✅ Social authentication
-- ✅ Email authentication
-- ✅ Phone number authentication
-- ✅ Username authentication
-- ✅ Anonymous authentication — [`sign-in/anonymous`](https://www.better-auth.com/docs/plugins/anonymous) and [`delete-anonymous-user`](https://www.better-auth.com/docs/plugins/anonymous); see **Anonymous authentication** below
-- ✅ Admin
-- ✅ Email OTP
-- ✅ JWT
-- ✅ Two-Factor Authentication
-- ✅ API Key
-- ✅ Organization
-- ✅ One-time-token
-- ✅ Passkey — [`@better-auth/passkey`](https://www.better-auth.com/docs/plugins/passkey); see **Passkey** below
-
-## Usage
-
-Import the package in your `main.dart`:
+## Quick start
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 
-void main() async {
-   WidgetsFlutterBinding.ensureInitialized();
-   await FlutterBetterAuth.initialize(
-      url: 'api_url',
-      scheme: 'myapp',
-   );
-   runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterBetterAuth.initialize(
+    url: 'https://your-server.com/api/auth', // Better Auth base URL
+    scheme: 'myapp',                         // deep-link scheme (required for native social)
+  );
+  runApp(const MyApp());
 }
-```
 
-### Native social authentication
-
-Native OAuth follows the same authorization-proxy flow as Better Auth's
-official Expo client. Configure the Expo server plugin and trust your app's
-deep-link origin:
-
-```ts
-import { expo } from "@better-auth/expo";
-
-export const auth = betterAuth({
-  trustedOrigins: ["myapp://"],
-  plugins: [expo()],
-});
-```
-
-Pass the matching scheme to the Flutter client:
-
-```dart
-await FlutterBetterAuth.initialize(
-  url: 'https://example.com/api/auth',
-  scheme: 'myapp',
-);
-```
-
-The client sends `expo-origin`, opens `/expo-authorization-proxy`, forwards the
-stored OAuth state, and persists the session cookies returned through the deep
-link callback.
-
-Wrap your `MaterialApp` with `BetterAuthProvider`:
-
-```dart
 class MyApp extends StatelessWidget {
-   const MyApp({super.key});
-
-   @override
-   Widget build(BuildContext context) {
-      return BetterAuthProvider(
-         child: MaterialApp(
-            title: 'BetterAuth',
-            theme: ThemeData(
-               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            ),
-            home: const MyHomePage(title: 'Better Auth'),
-         ),
-      );
-   }
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return BetterAuthProvider(
+      child: MaterialApp(home: const HomePage()),
+    );
+  }
 }
 ```
 
-Access BetterAuth client using `BetterAuthConsumer`:
+Access the client anywhere:
 
 ```dart
+// From the widget tree:
 BetterAuthConsumer(
-  builder: (context, client) {
-    return Widget();
-  }
-)
-```
+  builder: (context, client) => /* use client */,
+);
 
-Or directly via:
-
-```dart
+// Or directly:
 final client = FlutterBetterAuth.client;
 ```
 
-### Anonymous authentication
+`initialize()` options:
 
-Enable the **[`anonymous`](https://www.better-auth.com/docs/plugins/anonymous)** plugin on the server. This package exposes:
+| Param | Default | Purpose |
+|-------|---------|---------|
+| `url` | — | Better Auth base URL (`…/api/auth`). |
+| `scheme` | `null` | Deep-link scheme. **Required for native social sign-in** — sent as `expo-origin`. |
+| `store` | secure storage | Custom `StorageInterface` (see [Storage](#storage)). |
+| `dio` | new `Dio` | Provide your own `Dio` instance. |
+| `refreshSessionOnAppResume` | `true` | Refresh session when the app returns to foreground. |
+| `refreshSessionOnReconnect` | `true` | Refresh session when the device regains connectivity. |
 
-| Action | Dart API |
-|--------|----------|
-| Sign in anonymously | `await client.signIn.anonymous()` — available from the default import (`flutter_better_auth.dart`); **`POST /sign-in/anonymous`**. |
-| Delete anonymous user | Import **`plugins/anonymous/anonymous_plugin.dart`**, then `await client.anonymous.deleteAnonymousUser()` — **`POST /delete-anonymous-user`** (requires an anonymous session; can be disabled on the server with `disableDeleteAnonymousUser`). |
+## Server setup
 
-Linking an anonymous account when signing in another way (`onLinkAccount`) is configured only on the server.
+Install the matching plugins on your Better Auth server and trust your app's scheme:
 
-### Passkey
+```ts
+import { betterAuth } from "better-auth";
+import { expo } from "@better-auth/expo";
 
-Install [`@better-auth/passkey`](https://www.better-auth.com/docs/plugins/passkey) on the server. Import **`plugins/passkey/passkey_plugin.dart`** for **`client.passkey`**.
+export const auth = betterAuth({
+  trustedOrigins: ["myapp://"],         // your app scheme
+  plugins: [
+    expo(),                              // required for native social sign-in
+    // twoFactor(), organization(), admin(), passkey(), jwt(),
+    // phoneNumber(), emailOTP(), apiKey(), anonymous(), oneTimeToken(), ...
+  ],
+  emailAndPassword: { enabled: true },
+  socialProviders: { /* google, github, … */ },
+});
+```
 
-This matches the official client’s **two-step** WebAuthn flow (see [`packages/passkey/src/client.ts`](https://github.com/better-auth/better-auth/blob/main/packages/passkey/src/client.ts)):
+Each Flutter plugin below requires its server-side counterpart to be enabled.
 
-| Step | Method | HTTP |
-|------|--------|------|
-| Registration options | `client.passkey.generateRegistrationOptions(...)` | `GET /passkey/generate-register-options` |
-| Verify registration | `client.passkey.verifyRegistration(body)` | `POST /passkey/verify-registration` — `body` includes `response` (registration JSON) and optional `name` |
-| Authentication options | `client.passkey.generateAuthenticationOptions()` | `GET /passkey/generate-authenticate-options` |
-| Verify sign-in | `client.passkey.verifyAuthentication(body)` | `POST /passkey/verify-authentication` — `body` includes `response` (authentication JSON); sets session |
-| List | `client.passkey.listUserPasskeys()` | `GET /passkey/list-user-passkeys` |
-| Delete | `client.passkey.deletePasskey(id: ...)` | `POST /passkey/delete-passkey` |
-| Rename | `client.passkey.updatePasskey(id: ..., name: ...)` | `POST /passkey/update-passkey` |
+## Working with `Result`
 
-#### Pub / WebAuthn dependencies
+Every call returns `Result<T>` (a sealed type). Use the `data` / `error` getters:
 
-- **`flutter_better_auth`:** passkey support is **HTTP-only** on top of [Dio](https://pub.dev/packages/dio) (already pulled in). This package’s **`pubspec.yaml`** does **not** list a WebAuthn plugin on purpose, so consumers who never use passkeys avoid extra native/binary weight.
+```dart
+final result = await client.signIn.email(
+  email: 'test@mail.com',
+  password: '12345678',
+);
 
-- **Your application:** completing registration or sign-in still needs a **credential ceremony** on the device (FIDO2 / WebAuthn). Add a WebAuthn-capable dependency **in your app’s `pubspec.yaml`**, for example **[`passkeys`](https://pub.dev/packages/passkeys)** on mobile—or use **`web`** / **`dart:js_interop`** and the browser’s **`navigator.credentials`** on web—or another approach you prefer. Translate the credential result into JSON and pass it as `response` inside the maps for `verifyRegistration` / `verifyAuthentication`.
+if (result.data != null) {
+  print(result.data); // typed response (e.g. SignInEmailResponse)
+} else {
+  print('${result.error?.code}: ${result.error?.message}');
+}
+```
 
-Ensure your Dio client sends a correct **`Origin`** (and cookies if you rely on cookie sessions) so [SimpleWebAuthn verification](https://www.better-auth.com/docs/plugins/passkey) on the server matches your RP settings.
+Or pattern-match:
 
-## Using plugins
+```dart
+switch (result) {
+  case Success(:final data): /* … */;
+  case Failure(:final error): /* … */;
+}
+```
 
-To use available plugin, you can import them like:
+## Session & auth state
+
+```dart
+final client = FlutterBetterAuth.client;
+
+// Current session (user + session):
+final res = await client.getSession();
+final user = res.data?.user;
+
+// Reactive auth state — emits User? on sign-in/out, resume, reconnect:
+StreamBuilder<User?>(
+  stream: client.onAuthChange,
+  builder: (context, snap) => Text(snap.data == null ? 'Signed out' : 'Hi ${snap.data!.name}'),
+);
+
+// Force a refresh:
+await FlutterBetterAuth.refreshSession();
+
+// Sign out:
+await client.signOut();
+
+// Sessions management:
+await client.listSessions();
+await client.revokeSession(token: '<session-token>');
+await client.revokeOtherSessions();
+await client.revokeSessions();
+```
+
+## Email & password
+
+```dart
+// Sign up
+await client.signUp.email(
+  name: 'Test User',
+  email: 'test@mail.com',
+  password: '12345678',
+);
+
+// Sign in
+await client.signIn.email(
+  email: 'test@mail.com',
+  password: '12345678',
+  rememberMe: true, // optional (bool)
+);
+
+// Update profile
+await client.updateUser(name: 'New Name', image: 'https://…/avatar.png');
+
+// Change password
+await client.changePassword(
+  currentPassword: '12345678',
+  newPassword: '87654321',
+  revokeOtherSessions: true,
+);
+
+// Forgot / reset password
+await client.forgotPassword(email: 'test@mail.com');
+await client.resetPassword(newPassword: '87654321', token: '<token-from-email>');
+
+// Email verification
+await client.sendVerificationEmail(email: 'test@mail.com');
+await client.verifyEmail(token: '<token>');
+
+// Change email
+await client.changeEmail(newEmail: 'new@mail.com');
+
+// Delete account
+await client.deleteUser(password: '12345678');
+```
+
+## Username
+
+Requires the `username()` server plugin.
+
+```dart
+await client.signIn.username(
+  username: 'testuser',
+  password: '12345678',
+  rememberMe: true,
+);
+```
+
+## Anonymous
+
+Requires the `anonymous()` server plugin.
+
+```dart
+import 'package:flutter_better_auth/plugins/anonymous/anonymous_plugin.dart';
+
+// Sign in anonymously (available without the extra import):
+await client.signIn.anonymous();
+
+// Delete the anonymous user (needs the import above):
+await client.anonymous.deleteAnonymousUser();
+```
+
+Linking an anonymous account to a later sign-in (`onLinkAccount`) is configured on the server.
+
+## Social / OAuth
+
+Two flows: **redirect** (opens a browser, e.g. GitHub) and **idToken** (native, e.g. Google).
+Both require the server `expo()` plugin and your scheme in `trustedOrigins`.
+
+### Redirect flow (GitHub, etc.)
+
+```dart
+await client.signIn.social(
+  provider: 'github',
+  callbackUrlScheme: 'myapp', // your deep-link scheme
+  scopes: ['read:user'],      // optional (List<String>)
+);
+```
+
+The client opens `/expo-authorization-proxy`, runs the OAuth round-trip in a secure web view,
+and persists the session cookie returned via the `myapp://` deep link.
+
+**Android** — register the callback activity in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<activity
+  android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+  android:exported="true"
+  android:taskAffinity="">
+  <intent-filter android:label="flutter_web_auth_2">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="myapp" />
+  </intent-filter>
+</activity>
+```
+
+### idToken flow (Google native)
+
+Use [`google_sign_in`](https://pub.dev/packages/google_sign_in) to obtain an ID token, then:
+
+```dart
+import 'package:google_sign_in/google_sign_in.dart';
+
+await GoogleSignIn.instance.initialize(
+  serverClientId: '<google-WEB-oauth-client-id>', // must match server's google clientId
+);
+final account = await GoogleSignIn.instance.authenticate();
+final idToken = account.authentication.idToken!;
+
+await client.signIn.social(
+  provider: 'google',
+  idToken: SocialIdTokenBody(token: idToken),
+);
+```
+
+Google Cloud setup (same project as the web client):
+- **Web** OAuth client → use its id as `serverClientId` **and** the server's `socialProviders.google.clientId`.
+- **Android** OAuth client → your app package + signing SHA-1 (no API exists to create this; do it in the console/Firebase).
+- **iOS** OAuth client → put its reversed id as a `CFBundleURLTypes` scheme in `Info.plist`.
+- Configure the **OAuth consent screen** (a fresh project without one throws "Developer console is not set up correctly").
+
+### Account linking
+
+```dart
+await client.social.link(provider: 'github', callbackURL: 'myapp://', scopes: ['repo']);
+await client.social.unlink(providerId: 'github');
+await client.social.listAccounts();
+await client.social.refreshToken(providerId: 'google');
+await client.social.getAccessToken(providerId: 'google');
+```
+
+## Phone number
+
+Requires the `phoneNumber()` server plugin.
+
+```dart
+import 'package:flutter_better_auth/plugins/phone/phone_plugin.dart';
+
+await client.phone.sendOtp(body: PhoneBody(phoneNumber: '+15555550123'));
+await client.phone.verify(body: VerifyPhoneBody(phoneNumber: '+15555550123', code: '123456'));
+await client.phone.signIn(body: SignInPhoneBody(phoneNumber: '+15555550123', password: '12345678'));
+
+// Password reset by phone
+await client.phone.requestPasswordResetOTP(body: PhoneBody(phoneNumber: '+15555550123'));
+await client.phone.restPassword(
+  body: ResetPhonePasswordBody(otp: '123456', phoneNumber: '+15555550123', newPassword: '87654321'),
+);
+```
+
+## Email OTP
+
+Requires the `emailOTP()` server plugin.
+
+```dart
+import 'package:flutter_better_auth/plugins/email_otp/email_otp_plugin.dart';
+
+await client.emailOtp.sendVerification(email: 'test@mail.com', type: 'sign-in');
+await client.emailOtp.signIn(email: 'test@mail.com', otp: '123456');
+await client.emailOtp.verifyEmail(email: 'test@mail.com', otp: '123456');
+
+// Password reset by OTP
+await client.emailOtp.forgotPassword(email: 'test@mail.com');
+await client.emailOtp.resetPassword(email: 'test@mail.com', otp: '123456', password: '87654321');
+```
+
+`type` is one of `'sign-in'`, `'email-verification'`, `'forget-password'`.
+
+## Two-Factor (2FA)
+
+Requires the `twoFactor()` server plugin.
+
+```dart
+import 'package:flutter_better_auth/plugins/two_factor/two_factor_plugin.dart';
+
+// Enrollment
+await client.twoFactor.enable(password: '12345678');     // returns TOTP secret/URI + backup codes
+await client.twoFactor.getTotpUri(password: '12345678');  // for the QR code
+await client.twoFactor.disable(password: '12345678');
+
+// Verify (during sign-in challenge)
+await client.twoFactor.verifyTotp(code: '123456', trustDevice: true);
+await client.twoFactor.sendOtp();                          // OTP via email/SMS
+await client.twoFactor.verifyOtp(code: '123456');
+await client.twoFactor.verifyBackupCode(code: 'abcd-efgh');
+
+// Backup codes
+await client.twoFactor.generateBackupCodes(password: '12345678');
+await client.twoFactor.viewBackupCodes(userId: '<user-id>');
+```
+
+## Passkey (WebAuthn)
+
+Requires the `@better-auth/passkey` server plugin. This client exposes the **HTTP** surface only —
+the actual credential ceremony (FIDO2/WebAuthn) is done by an app-side package such as
+[`passkeys`](https://pub.dev/packages/passkeys).
+
+```dart
+import 'package:flutter_better_auth/plugins/passkey/passkey_plugin.dart';
+
+// 1. Get options from the server
+final opts = await client.passkey.generateRegistrationOptions(/* … */);
+// 2. Run the device ceremony with your WebAuthn package → credential JSON
+// 3. Send it back
+await client.passkey.verifyRegistration(/* body: { response, name } */);
+
+// Sign-in
+await client.passkey.generateAuthenticationOptions();
+await client.passkey.verifyAuthentication(/* body: { response } */);
+
+// Manage
+await client.passkey.listUserPasskeys();
+await client.passkey.updatePasskey(id: '<id>', name: 'My phone');
+await client.passkey.deletePasskey(id: '<id>');
+```
+
+## Admin
+
+Requires the `admin()` server plugin and an admin session.
 
 ```dart
 import 'package:flutter_better_auth/plugins/admin/admin_plugin.dart';
-import 'package:flutter_better_auth/plugins/anonymous/anonymous_plugin.dart';
-import 'package:flutter_better_auth/plugins/phone/phone_plugin.dart';
-import 'package:flutter_better_auth/plugins/email_otp/email_otp_plugin.dart';
-import 'package:flutter_better_auth/plugins/jwt/jwt_plugin.dart';
+
+await client.admin.listUsers(limit: 20, offset: 0, searchValue: 'john');
+await client.admin.getUser(id: '<user-id>');
+await client.admin.createUser(email: 'new@mail.com', password: '12345678', name: 'New', role: 'user');
+await client.admin.setRole(userId: '<id>', role: 'admin');
+
+await client.admin.banUser(userId: '<id>', banReason: 'spam', banExpiresIn: 86400);
+await client.admin.unbanUser(userId: '<id>');
+
+await client.admin.listUserSessions(userId: '<id>');
+await client.admin.revokeUserSessions(userId: '<id>');
+
+await client.admin.impersonateUser(userId: '<id>');
+await client.admin.stopImpersonating();
+await client.admin.removeUser(userId: '<id>');
+```
+
+## API Key
+
+Requires the `apiKey()` server plugin.
+
+```dart
 import 'package:flutter_better_auth/plugins/api_key/api_key_plugin.dart';
-import 'package:flutter_better_auth/plugins/two_factor/two_factor_plugin.dart';
+
+final created = await client.apiKey.create(name: 'my-key', expiresIn: 3600);
+await client.apiKey.list();
+await client.apiKey.fetch(id: '<key-id>');
+await client.apiKey.update(keyId: '<key-id>', enabled: false);
+await client.apiKey.verify(key: '<plaintext-key>');
+await client.apiKey.delete(keyId: '<key-id>');
+await client.apiKey.deleteAllExpired();
+```
+
+## Organization
+
+Requires the `organization()` server plugin.
+
+```dart
 import 'package:flutter_better_auth/plugins/organization/organization_plugin.dart';
-import 'package:flutter_better_auth/plugins/passkey/passkey_plugin.dart';
+
+await client.organization.checkSlug(slug: 'acme');
+await client.organization.create(name: 'Acme', slug: 'acme');
+await client.organization.listOrganizations();
+await client.organization.getFullOrganization(organizationId: '<org-id>');
+await client.organization.leave(organizationId: '<org-id>');
+
+// Members & invitations
+await client.organization.listMembers(limit: 20);
+await client.organization.inviteMember(email: 'member@mail.com', role: 'member', organizationId: '<org-id>');
+```
+
+`getSession()` populates `session.activeOrganizationId` once an active org is set on the server,
+and `session.activeTeamId` when teams are enabled.
+
+For server-side **additional schema fields**, use the `*Raw` variants with a JSON map:
+`createRaw(...)`, `inviteMemberRaw(...)`, `addMemberRaw(...)`, and `listMembersRaw({...})`
+for non-string list-member filters.
+
+## JWT
+
+Requires the `jwt()` server plugin.
+
+```dart
+import 'package:flutter_better_auth/plugins/jwt/jwt_plugin.dart';
+
+final token = await client.jwt.token();  // signed JWT for the current session
+final jwks = await client.jwt.jwks();     // public JWKS
+```
+
+## One-Time Token
+
+Requires the `oneTimeToken()` server plugin.
+
+```dart
 import 'package:flutter_better_auth/plugins/one_time_token/one_time_token_plugin.dart';
+
+final generated = await client.oneTimeToken.generate();    // GET /one-time-token/generate
+final session = await client.oneTimeToken.verify(token: '<token>'); // POST /one-time-token/verify
 ```
 
-And now, it will be available in client. For example:
+## Storage
+
+By default, session cookies are stored **encrypted** on native platforms
+(`flutter_secure_storage`, chunked for the iOS Keychain). To customize, pass a `StorageInterface`:
 
 ```dart
-client.phone // to access phone plugin 
-client.admin // to access admin plugin 
-client.anonymous // [`delete-anonymous-user`](https://www.better-auth.com/docs/plugins/anonymous) — anonymous sign-in: `client.signIn.anonymous()`
-client.emailOtp // to access email_otp plugin
-client.jwt // to access jwt plugin
-client.twoFactor // to access Two-Factor (TOTP, OTP, backup codes)
-client.apiKey // to access API Key plugin (create, verify, list, …)
-client.organization // organizations, members, invites, teams, dynamic roles, hasPermission
-client.passkey // WebAuthn: generate/verify registration & authentication, list, delete, update — see **Passkey** above
-client.oneTimeToken // Better Auth [`one-time-token`](https://www.better-auth.com/docs/plugins/one-time-token): generate / verify
-```
-
-`getSession()` populates **`session.activeOrganizationId`** after you set an active org on the server, and **`session.activeTeamId`** when the organization plugin has **teams** enabled.
-
-Typed helpers such as **`client.organization.create`**, **`client.organization.inviteMember`**, and **`client.organization.addMember`** expose the usual body fields only. If you added **`schema.organization`**, **`schema.invitation`**, or **`schema.member`** additional fields on the server, use **`client.organization.createRaw(...)`**, **`client.organization.inviteMemberRaw(...)`**, or **`client.organization.addMemberRaw(...)`** with a JSON map matching that schema. For **`list-members`** filters whose **`filterValue`** is not a string (arrays, booleans, numbers), pass the full query map with **`client.organization.listMembersRaw({...})`**.
-
-## Full Example
-
-```dart
-import 'package:flutter/material.dart';
+// Built-in unencrypted Hive store (opt-in):
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 
-void main() async {
-   WidgetsFlutterBinding.ensureInitialized();
-   await FlutterBetterAuth.initialize(
-      url: 'your_base_url/api/auth',
-      scheme: 'myapp',
-   );
-   runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-   const MyApp({super.key});
-
-   @override
-   Widget build(BuildContext context) {
-      return BetterAuthProvider(
-         child: MaterialApp(
-            title: 'BetterAuth',
-            theme: ThemeData(
-               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            ),
-            home: const MyHomePage(title: 'Better Auth'),
-         ),
-      );
-   }
-}
-
-class MyHomePage extends StatefulWidget {
-   const MyHomePage({super.key, required this.title});
-
-   final String title;
-
-   @override
-   State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-   @override
-   Widget build(BuildContext context) {
-      return Scaffold(
-         appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            title: Text(widget.title),
-         ),
-         body: BetterAuthConsumer(
-            builder: (context, client) {
-               return Center(
-                  child: Column(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     spacing: 8,
-                     children: <Widget>[
-                        FilledButton(
-                           onPressed: () async {
-                              final result = await client.signIn.email(
-                                 email: "test@mail.com",
-                                 password: "123456788",
-                              );
-                              if (result.data != null) {
-                                 debugPrint(result.data.toString());
-                              } else {
-                                 debugPrint(result.error?.message);
-                              }
-                           },
-                           child: Text("Sign-in"),
-                        ),
-
-                        FilledButton(
-                           onPressed: () async {
-                              final result = await client.getSession();
-                              if (result.data != null) {
-                                 debugPrint(result.data.toString());
-                              } else {
-                                 debugPrint(result.error?.message);
-                              }
-                           },
-                           child: Text("GetSession"),
-                        ),
-                        FilledButton(
-                           onPressed: () {
-                              client.signOut();
-                           },
-                           child: Text("SignOut"),
-                        ),
-                        FilledButton(
-                           onPressed: () async {
-                              await client.signIn.social(
-                                 provider: 'github',
-                                 disableRedirect: true,
-                                 callbackURL: "/auth-callback",
-                                 callbackUrlScheme: "myapp",
-                              );
-                           },
-                           child: Text("Github"),
-                        ),
-
-                        FilledButton(
-                           onPressed: () async {
-                              final result = await client.signUp.email(
-                                 name: "test",
-                                 email: "test@mail.com",
-                                 password: "123456788",
-                              );
-                              if (result.data != null) {
-                                 debugPrint(result.data.toString());
-                              } else {
-                                 debugPrint(result.error?.message);
-                              }
-                           },
-                           child: Text("SignUp"),
-                        ),
-                     ],
-                  ),
-               );
-            },
-         ),
-      );
-   }
-}
-
+await HiveStorage.init(); // opens the Hive box first
+await FlutterBetterAuth.initialize(
+  url: '…',
+  store: HiveStorage(), // or your own StorageInterface implementation
+);
 ```
 
-## Social Authentication
+A custom store implements:
 
-For social authentication, it is currently recommended to use `idToken`.
-
-If the social provider does not support `idToken`, follow these steps:
-
-1. **Add the dependency:**
-
-   Add `flutter_web_auth_2: ^5.0.0-alpha.3` (or newer) to your `pubspec.yaml` dependencies.
-
-2. **Update your AndroidManifest.xml:**
-
-   Insert the following into your `AndroidManifest.xml`, replacing `YOUR_CALLBACK_URL_SCHEME_HERE` with your actual callback URL scheme:
-
-```xml
-<manifest>
-   <application>
-      ...
-      <activity
-              android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
-              android:exported="true"
-              android:taskAffinity="">
-         <intent-filter android:label="flutter_web_auth_2">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="YOUR_CALLBACK_URL_SCHEME_HERE" />
-         </intent-filter>
-      </activity>
-      ...
-   </application>
-</manifest>
+```dart
+abstract class StorageInterface {
+  Future<void> saveCookies(String host, List<Cookie> cookies);
+  Future<List<Cookie>> loadCookies(String host);
+}
 ```
 
-1. **Configure your Better Auth server plugin:**
+## Plugin imports
 
-   Add `expo()` from `@better-auth/expo` to your Better Auth server plugin.
+The default import gives you `signIn`, `signUp`, `social`, sessions, and account methods.
+Each plugin getter needs its file imported:
 
-2. **Add your callback scheme to trustedOrigins:**
-
-   In your Better Auth configuration, ensure that `YOUR_CALLBACK_URL_SCHEME_HERE://` is included in the `trustedOrigins` list.
-
-```ts
-export const auth = betterAuth({
-   trustedOrigins: ["YOUR_CALLBACK_URL_SCHEME_HERE://"]
-})
+```dart
+import 'package:flutter_better_auth/plugins/admin/admin_plugin.dart';            // client.admin
+import 'package:flutter_better_auth/plugins/anonymous/anonymous_plugin.dart';    // client.anonymous
+import 'package:flutter_better_auth/plugins/phone/phone_plugin.dart';            // client.phone
+import 'package:flutter_better_auth/plugins/email_otp/email_otp_plugin.dart';    // client.emailOtp
+import 'package:flutter_better_auth/plugins/jwt/jwt_plugin.dart';                // client.jwt
+import 'package:flutter_better_auth/plugins/api_key/api_key_plugin.dart';        // client.apiKey
+import 'package:flutter_better_auth/plugins/two_factor/two_factor_plugin.dart';  // client.twoFactor
+import 'package:flutter_better_auth/plugins/organization/organization_plugin.dart'; // client.organization
+import 'package:flutter_better_auth/plugins/passkey/passkey_plugin.dart';        // client.passkey
+import 'package:flutter_better_auth/plugins/one_time_token/one_time_token_plugin.dart'; // client.oneTimeToken
 ```
 
-## Testing
+## Example app
 
-This package is still under development and not fully tested. Use with caution.
+The [`example/`](example) directory is a tabbed **test harness** that exercises every plugin
+with live output, plus a Next.js Better Auth server under [`web/`](web). See
+[`example/README.md`](example/README.md) for setup (including Google native sign-in).
 
 ## Author
 

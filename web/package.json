@@ -14,7 +14,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate": "pnpm dlx @better-auth/cli@latest migrate --config src/lib/auth.ts -y"
   },
   "dependencies": {
     "@better-auth/expo": "^1.6.10",

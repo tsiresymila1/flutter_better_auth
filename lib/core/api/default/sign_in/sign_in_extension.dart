@@ -23,9 +23,9 @@ extension SignInSocialExtension on SignInBetterAuth {
     String? newUserCallbackURL,
     String? errorCallbackURL,
     bool? disableRedirect = true,
-    String? scopes,
+    List<String>? scopes,
     SocialIdTokenBody? idToken,
-    String? requestSignUp,
+    bool? requestSignUp,
     String? loginHint,
   }) async {
     final effectiveScheme = callbackUrlScheme ?? FlutterBetterAuth.appScheme;

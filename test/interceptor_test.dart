@@ -22,8 +22,8 @@ void main() {
     late RemoveNullsInterceptor interceptor;
     setUp(() => interceptor = RemoveNullsInterceptor());
 
-    RequestOptions run(String path, Object? data) {
-      final options = RequestOptions(path: path, data: data);
+    RequestOptions run(String path, Object? data, {String method = 'POST'}) {
+      final options = RequestOptions(path: path, data: data, method: method);
       interceptor.onRequest(options, _RecordingHandler());
       return options;
     }
@@ -57,8 +57,13 @@ void main() {
       });
     });
 
-    test('leaves a null body untouched', () {
-      final options = run('/x', null);
+    test('sends an empty object for a bodyless POST', () {
+      final options = run('/sign-in/anonymous', null);
+      expect(options.data, <String, dynamic>{});
+    });
+
+    test('leaves a null GET body untouched', () {
+      final options = run('/x', null, method: 'GET');
       expect(options.data, isNull);
     });
   });

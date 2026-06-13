@@ -29,9 +29,14 @@ void main() async {
     // server's trustedOrigins.
     scheme: 'myapp',
   );
+  String? envOrNull(String key) {
+    final v = dotenv.env[key];
+    return (v == null || v.isEmpty) ? null : v;
+  }
+
   await GoogleAuthService.init(
-    serverClientId: dotenv.env['GOOGLE_SERVER_CLIENT_ID'],
-    clientId: dotenv.env['GOOGLE_IOS_CLIENT_ID'],
+    serverClientId: envOrNull('GOOGLE_SERVER_CLIENT_ID'),
+    clientId: envOrNull('GOOGLE_IOS_CLIENT_ID'),
   );
   runApp(const MyApp());
 }

@@ -25,9 +25,9 @@ abstract class SignInBetterAuth {
     @BodyExtra('newUserCallbackURL') String? newUserCallbackURL,
     @BodyExtra('errorCallbackURL') String? errorCallbackURL,
     @BodyExtra('disableRedirect') bool? disableRedirect,
-    @BodyExtra('scopes') String? scopes,
+    @BodyExtra('scopes') List<String>? scopes,
     @BodyExtra('idToken') SocialIdTokenBody? idToken,
-    @BodyExtra('requestSignUp') String? requestSignUp,
+    @BodyExtra('requestSignUp') bool? requestSignUp,
     @BodyExtra('loginHint') String? loginHint,
   });
 
@@ -36,14 +36,14 @@ abstract class SignInBetterAuth {
     @BodyExtra('email') required String email,
     @BodyExtra('password') required String password,
     @BodyExtra('callbackURL') String? callbackURL,
-    @BodyExtra('rememberMe') String? rememberMe,
+    @BodyExtra('rememberMe') bool? rememberMe,
   });
 
   @POST('/sign-in/username')
   Future<Result<SignInEmailResponse>> username({
     @BodyExtra('username') required String username,
     @BodyExtra('password') required String password,
-    @BodyExtra('rememberMe') String? rememberMe,
+    @BodyExtra('rememberMe') bool? rememberMe,
   });
 
   /// Better Auth [`anonymous`](https://www.better-auth.com/docs/plugins/anonymous) plugin.

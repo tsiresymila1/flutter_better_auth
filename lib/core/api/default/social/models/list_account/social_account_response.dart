@@ -7,7 +7,11 @@ part 'social_account_response.g.dart';
 abstract class SocialAccountResponse with _$SocialAccountResponse {
   const factory SocialAccountResponse({
     required String id,
-    required String provider,
+    // Better Auth returns `providerId` (not `provider`) for accounts.
+    required String providerId,
+    String? accountId,
+    String? userId,
+    List<String>? scopes,
     @Default(null) DateTime? createdAt,
     @Default(null) DateTime? updatedAt,
   }) = _SocialAccountResponse;

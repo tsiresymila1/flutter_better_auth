@@ -25,9 +25,9 @@ class _SignInBetterAuth implements SignInBetterAuth {
     String? newUserCallbackURL,
     String? errorCallbackURL,
     bool? disableRedirect,
-    String? scopes,
+    List<String>? scopes,
     SocialIdTokenBody? idToken,
-    String? requestSignUp,
+    bool? requestSignUp,
     String? loginHint,
   }) async {
     final _extra = <String, dynamic>{};
@@ -75,9 +75,9 @@ class _SignInBetterAuth implements SignInBetterAuth {
     String? newUserCallbackURL,
     String? errorCallbackURL,
     bool? disableRedirect,
-    String? scopes,
+    List<String>? scopes,
     SocialIdTokenBody? idToken,
-    String? requestSignUp,
+    bool? requestSignUp,
     String? loginHint,
   }) {
     return BetterAuthCallAdapter<SignInSocialResponse>().adapt(
@@ -99,7 +99,7 @@ class _SignInBetterAuth implements SignInBetterAuth {
     required String email,
     required String password,
     String? callbackURL,
-    String? rememberMe,
+    bool? rememberMe,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -139,7 +139,7 @@ class _SignInBetterAuth implements SignInBetterAuth {
     required String email,
     required String password,
     String? callbackURL,
-    String? rememberMe,
+    bool? rememberMe,
   }) {
     return BetterAuthCallAdapter<SignInEmailResponse>().adapt(
       () => _email(
@@ -154,7 +154,7 @@ class _SignInBetterAuth implements SignInBetterAuth {
   Future<HttpResponse<SignInEmailResponse>> _username({
     required String username,
     required String password,
-    String? rememberMe,
+    bool? rememberMe,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -192,7 +192,7 @@ class _SignInBetterAuth implements SignInBetterAuth {
   Future<Result<SignInEmailResponse>> username({
     required String username,
     required String password,
-    String? rememberMe,
+    bool? rememberMe,
   }) {
     return BetterAuthCallAdapter<SignInEmailResponse>().adapt(
       () => _username(
