@@ -6,6 +6,7 @@ import 'package:flutter_better_auth/core/api/models/result/result_extension.dart
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../../../flutter_better_auth.dart';
+import '../../../utils/logger.dart';
 import '../../better_auth_client.dart';
 import '../../models/result/better_error.dart';
 import '../../models/result/result.dart';
@@ -78,29 +79,29 @@ extension SignInSocialExtension on SignInBetterAuth {
           url: proxyUrl.toString(),
           callbackUrlScheme: effectiveCallbackScheme,
         );
-        final url = Uri.tryParse(result);
-        final cookie = url?.queryParameters['cookie'];
+        logger.d('[BetterAuth] web-auth callback url: $result');
+        final callback = parseOAuthCallback(result);
+        logger.d(
+          '[BetterAuth] callback params: ${callback.allParams.keys.toList()}',
+        );
+        final cookie = callback.cookie;
         if (cookie != null && cookie.isNotEmpty) {
-          final List<Cookie> cookies = [cookie]
-              .map((str) => str.split(RegExp('(?<=)(,)(?=[^;]+?=)')))
-              .expand((cookie) => cookie)
-              .where((cookie) => cookie.isNotEmpty)
-              .map((str) => Cookie.fromSetCookieValue(str))
-              .toList();
-
+          final cookies = cookiesFromSetCookieParam(cookie);
           await FlutterBetterAuth.cookieJar.saveFromResponse(baseUri, cookies);
           await FlutterBetterAuth.refreshSession();
+        } else if (callback.code != null && callback.code!.isNotEmpty) {
+          await FlutterBetterAuth.client.social.callback(
+            provider: provider,
+            code: callback.code,
+            state: callback.state,
+          );
+          await FlutterBetterAuth.refreshSession();
         } else {
-          final code = url?.queryParameters['code'];
-          final state = url?.queryParameters['state'];
-          if (code != null && code.isNotEmpty) {
-            await FlutterBetterAuth.client.social.callback(
-              provider: provider,
-              code: code,
-              state: state,
-            );
-            await FlutterBetterAuth.refreshSession();
-          }
+          logger.w(
+            '[BetterAuth] callback carried no session cookie or code. '
+            'params=${callback.allParams.keys.toList()} '
+            'error=${callback.error}',
+          );
         }
       } on PlatformException catch (e) {
         return Result.err(
@@ -122,6 +123,75 @@ extension SignInSocialExtension on SignInBetterAuth {
     }
     return res;
   }
+}
+
+/// Parsed contents of the deeplink that `flutter_web_auth_2` returns after the
+/// OAuth round-trip.
+///
+/// Reads query parameters and, as a fallback, fragment parameters (some
+/// providers/servers return data in the URL fragment instead of the query).
+class OAuthCallbackResult {
+  const OAuthCallbackResult({
+    required this.raw,
+    required this.allParams,
+    this.cookie,
+    this.code,
+    this.state,
+    this.error,
+  });
+
+  /// The raw callback URL string returned by `flutter_web_auth_2`.
+  final String raw;
+
+  /// All parameters found in the query (and fragment) of the callback URL.
+  final Map<String, String> allParams;
+
+  /// Set-Cookie value carried by the native deeplink (Better Auth Expo flow).
+  final String? cookie;
+
+  /// OAuth authorization code, when the server returns code/state instead.
+  final String? code;
+  final String? state;
+
+  /// `error` / `error_description`, when the provider reports a failure.
+  final String? error;
+}
+
+/// Parses the callback deeplink returned by `flutter_web_auth_2`.
+OAuthCallbackResult parseOAuthCallback(String callbackUrl) {
+  final uri = Uri.tryParse(callbackUrl);
+  final params = <String, String>{};
+  if (uri != null) {
+    params.addAll(uri.queryParameters);
+    if (uri.fragment.isNotEmpty) {
+      try {
+        Uri.splitQueryString(uri.fragment).forEach((key, value) {
+          params.putIfAbsent(key, () => value);
+        });
+      } catch (_) {
+        // Fragment was not a query string; ignore.
+      }
+    }
+  }
+  return OAuthCallbackResult(
+    raw: callbackUrl,
+    allParams: params,
+    cookie: params['cookie'],
+    code: params['code'],
+    state: params['state'],
+    error: params['error'] ?? params['error_description'],
+  );
+}
+
+/// Splits the `cookie` deeplink parameter (a Set-Cookie header value that may
+/// contain multiple comma-separated cookies) into [Cookie] objects.
+List<Cookie> cookiesFromSetCookieParam(String cookieParam) {
+  return [cookieParam]
+      .map((str) => str.split(RegExp('(?<=)(,)(?=[^;]+?=)')))
+      .expand((parts) => parts)
+      .where((part) => part.trim().isNotEmpty)
+      .map((str) => Cookie.fromSetCookieValue(str))
+      .toList();
 }
 
 Uri buildBetterAuthOAuthProxyUri({
