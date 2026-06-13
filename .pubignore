@@ -1,0 +1,21 @@
+# A .pubignore overrides .gitignore for publishing, so it must also exclude the
+# usual build artifacts. Patterns without a leading slash match at any depth.
+
+# Build artifacts (root and example)
+build/
+.dart_tool/
+*.dill
+
+# Not part of the published Dart package
+web/
+graphify-out/
+.github/
+openapi.json
+
+# Example native scaffolding (keep example/lib + example/pubspec.yaml)
+example/android/
+example/ios/
+example/linux/
+example/macos/
+example/windows/
+example/web/
