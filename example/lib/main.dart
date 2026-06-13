@@ -9,6 +9,12 @@ void main() async {
   await dotenv.load();
   await FlutterBetterAuth.initialize(
     url: dotenv.env['BETTER_AUTH_URL']!,
+    // Required for native social sign-in: sent as `expo-origin` so the
+    // Better Auth Expo server recognizes the native flow and appends the
+    // session cookie to the `myapp://` callback deeplink. Must match the
+    // scheme registered in AndroidManifest.xml / Info.plist and the
+    // server's trustedOrigins.
+    scheme: 'myapp',
   );
   runApp(const MyApp());
 }
