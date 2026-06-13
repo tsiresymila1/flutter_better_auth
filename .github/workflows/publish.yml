@@ -1,0 +1,19 @@
+name: Publish to pub.dev
+
+# Triggered by the vX.Y.Z tag that tag-on-merge.yml pushes after a merge to main.
+# Uses pub.dev automated publishing (OIDC) — no secrets/token required.
+#
+# One-time setup on pub.dev (package Admin → Automated publishing):
+#   - Enable "Publishing from GitHub Actions"
+#   - Repository: tsiresymila1/flutter_better_auth
+#   - Tag pattern: v{{version}}
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  publish:
+    permissions:
+      id-token: write # required for pub.dev OIDC authentication
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1

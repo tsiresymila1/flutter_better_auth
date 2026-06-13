@@ -1,0 +1,49 @@
+name: Tag on merge to main
+
+# When a PR is merged (i.e. a push lands on main), tag the commit with the
+# pubspec version (vX.Y.Z) if that tag does not already exist. Pushing the tag
+# triggers the publish workflow. No tag is created when the version is unchanged,
+# so ordinary merges never attempt to republish.
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from pubspec.yaml
+        id: version
+        run: |
+          set -euo pipefail
+          version="$(grep -E '^version:' pubspec.yaml | head -n1 | sed -E 's/^version:[[:space:]]*//')"
+          if [ -z "$version" ]; then
+            echo "Could not read version from pubspec.yaml" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "pubspec version: $version"
+
+      - name: Create and push tag if new
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          tag="v${VERSION}"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "Tag $tag already exists — nothing to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$tag"
+          git push origin "$tag"
+          echo "Created tag $tag"
