@@ -8,7 +8,7 @@ abstract class OrganizationInvitation with _$OrganizationInvitation {
   const factory OrganizationInvitation({
     required String id,
     required String email,
-    required String role,
+    String? role,
     required String organizationId,
     required String inviterId,
     required String status,

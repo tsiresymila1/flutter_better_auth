@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OrganizationInvitation {
 
- String get id; String get email; String get role; String get organizationId; String get inviterId; String get status; DateTime? get expiresAt; DateTime? get createdAt; String? get organizationName; String? get organizationSlug; String? get inviterEmail; List<String>? get teamIds;
+ String get id; String get email; String? get role; String get organizationId; String get inviterId; String get status; DateTime? get expiresAt; DateTime? get createdAt; String? get organizationName; String? get organizationSlug; String? get inviterEmail; List<String>? get teamIds;
 /// Create a copy of OrganizationInvitation
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $OrganizationInvitationCopyWith<$Res>  {
   factory $OrganizationInvitationCopyWith(OrganizationInvitation value, $Res Function(OrganizationInvitation) _then) = _$OrganizationInvitationCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String role, String organizationId, String inviterId, String status, DateTime? expiresAt, DateTime? createdAt, String? organizationName, String? organizationSlug, String? inviterEmail, List<String>? teamIds
+ String id, String email, String? role, String organizationId, String inviterId, String status, DateTime? expiresAt, DateTime? createdAt, String? organizationName, String? organizationSlug, String? inviterEmail, List<String>? teamIds
 });
 
 
@@ -65,12 +65,12 @@ class _$OrganizationInvitationCopyWithImpl<$Res>
 
 /// Create a copy of OrganizationInvitation
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? role = null,Object? organizationId = null,Object? inviterId = null,Object? status = null,Object? expiresAt = freezed,Object? createdAt = freezed,Object? organizationName = freezed,Object? organizationSlug = freezed,Object? inviterEmail = freezed,Object? teamIds = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? role = freezed,Object? organizationId = null,Object? inviterId = null,Object? status = null,Object? expiresAt = freezed,Object? createdAt = freezed,Object? organizationName = freezed,Object? organizationSlug = freezed,Object? inviterEmail = freezed,Object? teamIds = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,organizationId: null == organizationId ? _self.organizationId : organizationId // ignore: cast_nullable_to_non_nullable
+as String,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String?,organizationId: null == organizationId ? _self.organizationId : organizationId // ignore: cast_nullable_to_non_nullable
 as String,inviterId: null == inviterId ? _self.inviterId : inviterId // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
@@ -164,7 +164,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String role,  String organizationId,  String inviterId,  String status,  DateTime? expiresAt,  DateTime? createdAt,  String? organizationName,  String? organizationSlug,  String? inviterEmail,  List<String>? teamIds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String? role,  String organizationId,  String inviterId,  String status,  DateTime? expiresAt,  DateTime? createdAt,  String? organizationName,  String? organizationSlug,  String? inviterEmail,  List<String>? teamIds)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OrganizationInvitation() when $default != null:
 return $default(_that.id,_that.email,_that.role,_that.organizationId,_that.inviterId,_that.status,_that.expiresAt,_that.createdAt,_that.organizationName,_that.organizationSlug,_that.inviterEmail,_that.teamIds);case _:
@@ -185,7 +185,7 @@ return $default(_that.id,_that.email,_that.role,_that.organizationId,_that.invit
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String role,  String organizationId,  String inviterId,  String status,  DateTime? expiresAt,  DateTime? createdAt,  String? organizationName,  String? organizationSlug,  String? inviterEmail,  List<String>? teamIds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String? role,  String organizationId,  String inviterId,  String status,  DateTime? expiresAt,  DateTime? createdAt,  String? organizationName,  String? organizationSlug,  String? inviterEmail,  List<String>? teamIds)  $default,) {final _that = this;
 switch (_that) {
 case _OrganizationInvitation():
 return $default(_that.id,_that.email,_that.role,_that.organizationId,_that.inviterId,_that.status,_that.expiresAt,_that.createdAt,_that.organizationName,_that.organizationSlug,_that.inviterEmail,_that.teamIds);case _:
@@ -205,7 +205,7 @@ return $default(_that.id,_that.email,_that.role,_that.organizationId,_that.invit
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String role,  String organizationId,  String inviterId,  String status,  DateTime? expiresAt,  DateTime? createdAt,  String? organizationName,  String? organizationSlug,  String? inviterEmail,  List<String>? teamIds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String? role,  String organizationId,  String inviterId,  String status,  DateTime? expiresAt,  DateTime? createdAt,  String? organizationName,  String? organizationSlug,  String? inviterEmail,  List<String>? teamIds)?  $default,) {final _that = this;
 switch (_that) {
 case _OrganizationInvitation() when $default != null:
 return $default(_that.id,_that.email,_that.role,_that.organizationId,_that.inviterId,_that.status,_that.expiresAt,_that.createdAt,_that.organizationName,_that.organizationSlug,_that.inviterEmail,_that.teamIds);case _:
@@ -220,12 +220,12 @@ return $default(_that.id,_that.email,_that.role,_that.organizationId,_that.invit
 @JsonSerializable()
 
 class _OrganizationInvitation implements OrganizationInvitation {
-  const _OrganizationInvitation({required this.id, required this.email, required this.role, required this.organizationId, required this.inviterId, required this.status, this.expiresAt, this.createdAt, this.organizationName, this.organizationSlug, this.inviterEmail, final  List<String>? teamIds}): _teamIds = teamIds;
+  const _OrganizationInvitation({required this.id, required this.email, this.role, required this.organizationId, required this.inviterId, required this.status, this.expiresAt, this.createdAt, this.organizationName, this.organizationSlug, this.inviterEmail, final  List<String>? teamIds}): _teamIds = teamIds;
   factory _OrganizationInvitation.fromJson(Map<String, dynamic> json) => _$OrganizationInvitationFromJson(json);
 
 @override final  String id;
 @override final  String email;
-@override final  String role;
+@override final  String? role;
 @override final  String organizationId;
 @override final  String inviterId;
 @override final  String status;
@@ -277,7 +277,7 @@ abstract mixin class _$OrganizationInvitationCopyWith<$Res> implements $Organiza
   factory _$OrganizationInvitationCopyWith(_OrganizationInvitation value, $Res Function(_OrganizationInvitation) _then) = __$OrganizationInvitationCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String role, String organizationId, String inviterId, String status, DateTime? expiresAt, DateTime? createdAt, String? organizationName, String? organizationSlug, String? inviterEmail, List<String>? teamIds
+ String id, String email, String? role, String organizationId, String inviterId, String status, DateTime? expiresAt, DateTime? createdAt, String? organizationName, String? organizationSlug, String? inviterEmail, List<String>? teamIds
 });
 
 
@@ -294,12 +294,12 @@ class __$OrganizationInvitationCopyWithImpl<$Res>
 
 /// Create a copy of OrganizationInvitation
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? role = null,Object? organizationId = null,Object? inviterId = null,Object? status = null,Object? expiresAt = freezed,Object? createdAt = freezed,Object? organizationName = freezed,Object? organizationSlug = freezed,Object? inviterEmail = freezed,Object? teamIds = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? role = freezed,Object? organizationId = null,Object? inviterId = null,Object? status = null,Object? expiresAt = freezed,Object? createdAt = freezed,Object? organizationName = freezed,Object? organizationSlug = freezed,Object? inviterEmail = freezed,Object? teamIds = freezed,}) {
   return _then(_OrganizationInvitation(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,organizationId: null == organizationId ? _self.organizationId : organizationId // ignore: cast_nullable_to_non_nullable
+as String,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String?,organizationId: null == organizationId ? _self.organizationId : organizationId // ignore: cast_nullable_to_non_nullable
 as String,inviterId: null == inviterId ? _self.inviterId : inviterId // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable

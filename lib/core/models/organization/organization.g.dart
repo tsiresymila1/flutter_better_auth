@@ -46,7 +46,7 @@ _Invitation _$InvitationFromJson(Map<String, dynamic> json) => _Invitation(
   id: json['id'] as String,
   organizationId: json['organizationId'] as String,
   email: json['email'] as String,
-  role: json['role'] as String,
+  role: json['role'] as String?,
   status: json['status'] as String? ?? 'pending',
   expiresAt: DateTime.parse(json['expiresAt'] as String),
   createdAt: DateTime.parse(json['createdAt'] as String),

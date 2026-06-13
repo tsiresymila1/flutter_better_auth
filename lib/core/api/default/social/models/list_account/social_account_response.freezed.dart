@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SocialAccountResponse {
 
- String get id; String get provider; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id;// Better Auth returns `providerId` (not `provider`) for accounts.
+ String get providerId; String? get accountId; String? get userId; List<String>? get scopes; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of SocialAccountResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $SocialAccountResponseCopyWith<SocialAccountResponse> get copyWith => _$SocialAc
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SocialAccountResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SocialAccountResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.providerId, providerId) || other.providerId == providerId)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.userId, userId) || other.userId == userId)&&const DeepCollectionEquality().equals(other.scopes, scopes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,provider,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,providerId,accountId,userId,const DeepCollectionEquality().hash(scopes),createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'SocialAccountResponse(id: $id, provider: $provider, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'SocialAccountResponse(id: $id, providerId: $providerId, accountId: $accountId, userId: $userId, scopes: $scopes, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $SocialAccountResponseCopyWith<$Res>  {
   factory $SocialAccountResponseCopyWith(SocialAccountResponse value, $Res Function(SocialAccountResponse) _then) = _$SocialAccountResponseCopyWithImpl;
 @useResult
 $Res call({
- String id, String provider, DateTime? createdAt, DateTime? updatedAt
+ String id, String providerId, String? accountId, String? userId, List<String>? scopes, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -65,11 +66,14 @@ class _$SocialAccountResponseCopyWithImpl<$Res>
 
 /// Create a copy of SocialAccountResponse
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? provider = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? providerId = null,Object? accountId = freezed,Object? userId = freezed,Object? scopes = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,providerId: null == providerId ? _self.providerId : providerId // ignore: cast_nullable_to_non_nullable
+as String,accountId: freezed == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
+as String?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,scopes: freezed == scopes ? _self.scopes : scopes // ignore: cast_nullable_to_non_nullable
+as List<String>?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -156,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String provider,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String providerId,  String? accountId,  String? userId,  List<String>? scopes,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SocialAccountResponse() when $default != null:
-return $default(_that.id,_that.provider,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.providerId,_that.accountId,_that.userId,_that.scopes,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -177,10 +181,10 @@ return $default(_that.id,_that.provider,_that.createdAt,_that.updatedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String provider,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String providerId,  String? accountId,  String? userId,  List<String>? scopes,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _SocialAccountResponse():
-return $default(_that.id,_that.provider,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.providerId,_that.accountId,_that.userId,_that.scopes,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +201,10 @@ return $default(_that.id,_that.provider,_that.createdAt,_that.updatedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String provider,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String providerId,  String? accountId,  String? userId,  List<String>? scopes,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _SocialAccountResponse() when $default != null:
-return $default(_that.id,_that.provider,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.providerId,_that.accountId,_that.userId,_that.scopes,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -212,11 +216,23 @@ return $default(_that.id,_that.provider,_that.createdAt,_that.updatedAt);case _:
 @JsonSerializable()
 
 class _SocialAccountResponse implements SocialAccountResponse {
-  const _SocialAccountResponse({required this.id, required this.provider, this.createdAt = null, this.updatedAt = null});
+  const _SocialAccountResponse({required this.id, required this.providerId, this.accountId, this.userId, final  List<String>? scopes, this.createdAt = null, this.updatedAt = null}): _scopes = scopes;
   factory _SocialAccountResponse.fromJson(Map<String, dynamic> json) => _$SocialAccountResponseFromJson(json);
 
 @override final  String id;
-@override final  String provider;
+// Better Auth returns `providerId` (not `provider`) for accounts.
+@override final  String providerId;
+@override final  String? accountId;
+@override final  String? userId;
+ final  List<String>? _scopes;
+@override List<String>? get scopes {
+  final value = _scopes;
+  if (value == null) return null;
+  if (_scopes is EqualUnmodifiableListView) return _scopes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 @override@JsonKey() final  DateTime? createdAt;
 @override@JsonKey() final  DateTime? updatedAt;
 
@@ -233,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SocialAccountResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SocialAccountResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.providerId, providerId) || other.providerId == providerId)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.userId, userId) || other.userId == userId)&&const DeepCollectionEquality().equals(other._scopes, _scopes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,provider,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,providerId,accountId,userId,const DeepCollectionEquality().hash(_scopes),createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'SocialAccountResponse(id: $id, provider: $provider, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'SocialAccountResponse(id: $id, providerId: $providerId, accountId: $accountId, userId: $userId, scopes: $scopes, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -253,7 +269,7 @@ abstract mixin class _$SocialAccountResponseCopyWith<$Res> implements $SocialAcc
   factory _$SocialAccountResponseCopyWith(_SocialAccountResponse value, $Res Function(_SocialAccountResponse) _then) = __$SocialAccountResponseCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String provider, DateTime? createdAt, DateTime? updatedAt
+ String id, String providerId, String? accountId, String? userId, List<String>? scopes, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -270,11 +286,14 @@ class __$SocialAccountResponseCopyWithImpl<$Res>
 
 /// Create a copy of SocialAccountResponse
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? provider = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? providerId = null,Object? accountId = freezed,Object? userId = freezed,Object? scopes = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_SocialAccountResponse(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,providerId: null == providerId ? _self.providerId : providerId // ignore: cast_nullable_to_non_nullable
+as String,accountId: freezed == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
+as String?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,scopes: freezed == scopes ? _self._scopes : scopes // ignore: cast_nullable_to_non_nullable
+as List<String>?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));

@@ -568,7 +568,7 @@ as DateTime,
 /// @nodoc
 mixin _$Invitation {
 
- String get id; String get organizationId; String get email; String get role; String get status; DateTime get expiresAt; DateTime get createdAt; String get inviterId;
+ String get id; String get organizationId; String get email; String? get role; String get status; DateTime get expiresAt; DateTime get createdAt; String get inviterId;
 /// Create a copy of Invitation
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -601,7 +601,7 @@ abstract mixin class $InvitationCopyWith<$Res>  {
   factory $InvitationCopyWith(Invitation value, $Res Function(Invitation) _then) = _$InvitationCopyWithImpl;
 @useResult
 $Res call({
- String id, String organizationId, String email, String role, String status, DateTime expiresAt, DateTime createdAt, String inviterId
+ String id, String organizationId, String email, String? role, String status, DateTime expiresAt, DateTime createdAt, String inviterId
 });
 
 
@@ -618,13 +618,13 @@ class _$InvitationCopyWithImpl<$Res>
 
 /// Create a copy of Invitation
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? organizationId = null,Object? email = null,Object? role = null,Object? status = null,Object? expiresAt = null,Object? createdAt = null,Object? inviterId = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? organizationId = null,Object? email = null,Object? role = freezed,Object? status = null,Object? expiresAt = null,Object? createdAt = null,Object? inviterId = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,organizationId: null == organizationId ? _self.organizationId : organizationId // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,expiresAt: null == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as DateTime,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,inviterId: null == inviterId ? _self.inviterId : inviterId // ignore: cast_nullable_to_non_nullable
@@ -713,7 +713,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String organizationId,  String email,  String role,  String status,  DateTime expiresAt,  DateTime createdAt,  String inviterId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String organizationId,  String email,  String? role,  String status,  DateTime expiresAt,  DateTime createdAt,  String inviterId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Invitation() when $default != null:
 return $default(_that.id,_that.organizationId,_that.email,_that.role,_that.status,_that.expiresAt,_that.createdAt,_that.inviterId);case _:
@@ -734,7 +734,7 @@ return $default(_that.id,_that.organizationId,_that.email,_that.role,_that.statu
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String organizationId,  String email,  String role,  String status,  DateTime expiresAt,  DateTime createdAt,  String inviterId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String organizationId,  String email,  String? role,  String status,  DateTime expiresAt,  DateTime createdAt,  String inviterId)  $default,) {final _that = this;
 switch (_that) {
 case _Invitation():
 return $default(_that.id,_that.organizationId,_that.email,_that.role,_that.status,_that.expiresAt,_that.createdAt,_that.inviterId);case _:
@@ -754,7 +754,7 @@ return $default(_that.id,_that.organizationId,_that.email,_that.role,_that.statu
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String organizationId,  String email,  String role,  String status,  DateTime expiresAt,  DateTime createdAt,  String inviterId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String organizationId,  String email,  String? role,  String status,  DateTime expiresAt,  DateTime createdAt,  String inviterId)?  $default,) {final _that = this;
 switch (_that) {
 case _Invitation() when $default != null:
 return $default(_that.id,_that.organizationId,_that.email,_that.role,_that.status,_that.expiresAt,_that.createdAt,_that.inviterId);case _:
@@ -769,13 +769,13 @@ return $default(_that.id,_that.organizationId,_that.email,_that.role,_that.statu
 @JsonSerializable()
 
 class _Invitation implements Invitation {
-  const _Invitation({required this.id, required this.organizationId, required this.email, required this.role, this.status = 'pending', required this.expiresAt, required this.createdAt, required this.inviterId});
+  const _Invitation({required this.id, required this.organizationId, required this.email, this.role, this.status = 'pending', required this.expiresAt, required this.createdAt, required this.inviterId});
   factory _Invitation.fromJson(Map<String, dynamic> json) => _$InvitationFromJson(json);
 
 @override final  String id;
 @override final  String organizationId;
 @override final  String email;
-@override final  String role;
+@override final  String? role;
 @override@JsonKey() final  String status;
 @override final  DateTime expiresAt;
 @override final  DateTime createdAt;
@@ -814,7 +814,7 @@ abstract mixin class _$InvitationCopyWith<$Res> implements $InvitationCopyWith<$
   factory _$InvitationCopyWith(_Invitation value, $Res Function(_Invitation) _then) = __$InvitationCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String organizationId, String email, String role, String status, DateTime expiresAt, DateTime createdAt, String inviterId
+ String id, String organizationId, String email, String? role, String status, DateTime expiresAt, DateTime createdAt, String inviterId
 });
 
 
@@ -831,13 +831,13 @@ class __$InvitationCopyWithImpl<$Res>
 
 /// Create a copy of Invitation
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? organizationId = null,Object? email = null,Object? role = null,Object? status = null,Object? expiresAt = null,Object? createdAt = null,Object? inviterId = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? organizationId = null,Object? email = null,Object? role = freezed,Object? status = null,Object? expiresAt = null,Object? createdAt = null,Object? inviterId = null,}) {
   return _then(_Invitation(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,organizationId: null == organizationId ? _self.organizationId : organizationId // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,expiresAt: null == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as DateTime,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,inviterId: null == inviterId ? _self.inviterId : inviterId // ignore: cast_nullable_to_non_nullable

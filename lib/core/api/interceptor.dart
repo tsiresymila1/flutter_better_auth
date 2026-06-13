@@ -7,9 +7,21 @@ class RemoveNullsInterceptor extends Interceptor {
         urlPath.endsWith('/organization/set-active');
   }
 
+  static const _bodyMethods = {'POST', 'PUT', 'PATCH'};
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final data = options.data;
+
+    // Better Auth parses the JSON body even for bodyless POSTs. With the
+    // global `application/json` content type, an empty body makes the server
+    // run `JSON.parse('')`, which throws "Unexpected end of JSON input". Send
+    // an empty object so the body is valid JSON.
+    if (data == null && _bodyMethods.contains(options.method.toUpperCase())) {
+      options.data = <String, dynamic>{};
+      super.onRequest(options, handler);
+      return;
+    }
 
     if (data != null &&
         !_preserveNullKeysForOrganizationBody(options.uri.path)) {

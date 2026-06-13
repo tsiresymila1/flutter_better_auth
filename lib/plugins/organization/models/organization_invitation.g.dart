@@ -11,7 +11,7 @@ _OrganizationInvitation _$OrganizationInvitationFromJson(
 ) => _OrganizationInvitation(
   id: json['id'] as String,
   email: json['email'] as String,
-  role: json['role'] as String,
+  role: json['role'] as String?,
   organizationId: json['organizationId'] as String,
   inviterId: json['inviterId'] as String,
   status: json['status'] as String,

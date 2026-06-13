@@ -37,7 +37,7 @@ abstract class Invitation with _$Invitation {
     required String id,
     required String organizationId,
     required String email,
-    required String role,
+    String? role,
     @Default('pending') String status,
     required DateTime expiresAt,
     required DateTime createdAt,

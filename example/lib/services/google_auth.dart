@@ -1,3 +1,4 @@
+import 'package:flutter_better_auth/core/utils/logger.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -24,11 +25,15 @@ class GoogleAuthService {
   /// Triggers the native Google account picker, then exchanges the resulting
   /// ID token with Better Auth via `signIn.social(idToken:)`.
   static Future<Result<SignInSocialResponse>> signIn() async {
+    logger.i('SIGNING ...');
     if (!GoogleSignIn.instance.supportsAuthenticate()) {
       throw StateError('Google authenticate() is unsupported on this platform');
     }
     final account = await GoogleSignIn.instance.authenticate();
+    
     final idToken = account.authentication.idToken;
+    logger.i('ID TOKEN');
+    logger.i(idToken);
     if (idToken == null || idToken.isEmpty) {
       throw StateError(
         'Google returned no ID token — check GOOGLE_SERVER_CLIENT_ID',
