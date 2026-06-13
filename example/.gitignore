@@ -3,6 +3,7 @@
 *.log
 .env
 .env.*
+!.env.example
 *.pyc
 *.swp
 .DS_Store
