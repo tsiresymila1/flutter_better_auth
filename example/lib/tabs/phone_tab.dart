@@ -44,10 +44,8 @@ class _PhoneTabState extends State<PhoneTab> {
             _console,
             'phone.signIn',
             () => c.phone.signIn(
-              body: SignInPhoneBody(
-                phoneNumber: _phone.text,
-                password: _password.text,
-              ),
+              phoneNumber: _phone.text,
+              password: _password.text,
             ),
           ),
         ),
@@ -56,7 +54,7 @@ class _PhoneTabState extends State<PhoneTab> {
           () => runAction(
             _console,
             'phone.sendOtp',
-            () => c.phone.sendOtp(body: PhoneBody(phoneNumber: _phone.text)),
+            () => c.phone.sendOtp(phoneNumber: _phone.text),
           ),
         ),
         Act(
@@ -64,12 +62,7 @@ class _PhoneTabState extends State<PhoneTab> {
           () => runAction(
             _console,
             'phone.verify',
-            () => c.phone.verify(
-              body: VerifyPhoneBody(
-                phoneNumber: _phone.text,
-                code: _code.text,
-              ),
-            ),
+            () => c.phone.verify(phoneNumber: _phone.text, code: _code.text),
           ),
         ),
         const SectionLabel('Password reset'),
@@ -80,9 +73,7 @@ class _PhoneTabState extends State<PhoneTab> {
           () => runAction(
             _console,
             'phone.requestPasswordResetOTP',
-            () => c.phone.requestPasswordResetOTP(
-              body: PhoneBody(phoneNumber: _phone.text),
-            ),
+            () => c.phone.requestPasswordResetOTP(phoneNumber: _phone.text),
           ),
         ),
         Act(
@@ -91,11 +82,9 @@ class _PhoneTabState extends State<PhoneTab> {
             _console,
             'phone.restPassword',
             () => c.phone.restPassword(
-              body: ResetPhonePasswordBody(
-                otp: _otp.text,
-                phoneNumber: _phone.text,
-                newPassword: _newPassword.text,
-              ),
+              otp: _otp.text,
+              phoneNumber: _phone.text,
+              newPassword: _newPassword.text,
             ),
           ),
         ),

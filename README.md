@@ -309,15 +309,13 @@ Requires the `phoneNumber()` server plugin.
 ```dart
 import 'package:flutter_better_auth/plugins/phone/phone_plugin.dart';
 
-await client.phone.sendOtp(body: PhoneBody(phoneNumber: '+15555550123'));
-await client.phone.verify(body: VerifyPhoneBody(phoneNumber: '+15555550123', code: '123456'));
-await client.phone.signIn(body: SignInPhoneBody(phoneNumber: '+15555550123', password: '12345678'));
+await client.phone.sendOtp(phoneNumber: '+15555550123');
+await client.phone.verify(phoneNumber: '+15555550123', code: '123456');
+await client.phone.signIn(phoneNumber: '+15555550123', password: '12345678', rememberMe: true);
 
 // Password reset by phone
-await client.phone.requestPasswordResetOTP(body: PhoneBody(phoneNumber: '+15555550123'));
-await client.phone.restPassword(
-  body: ResetPhonePasswordBody(otp: '123456', phoneNumber: '+15555550123', newPassword: '87654321'),
-);
+await client.phone.requestPasswordResetOTP(phoneNumber: '+15555550123');
+await client.phone.restPassword(otp: '123456', phoneNumber: '+15555550123', newPassword: '87654321');
 ```
 
 ## Email OTP

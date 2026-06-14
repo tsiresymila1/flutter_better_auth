@@ -1,5 +1,16 @@
 # Changelog
 
+### 0.3.0
+
+**Breaking**
+
+- `client.phone` methods now take flat named parameters (`@BodyExtra`) instead of body objects, matching every other plugin:
+    - `signIn(phoneNumber:, password:, rememberMe:)` — was `signIn(body: SignInPhoneBody(...))`.
+    - `sendOtp(phoneNumber:)`, `requestPasswordResetOTP(phoneNumber:)` — was `(body: PhoneBody(...))`.
+    - `verify(phoneNumber:, code:, disableSession:, updatePhoneNumber:)` — was `(body: VerifyPhoneBody(...))`; `disableSession` is now `bool?`.
+    - `restPassword(otp:, phoneNumber:, newPassword:)` — was `(body: ResetPhonePasswordBody(...))`.
+- Removed the now-unused body models and the `SignInPhoneBody` export.
+
 ### 0.2.0
 
 **Breaking**

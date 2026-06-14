@@ -20,12 +20,20 @@ class _PhoneBetterAuth implements PhoneBetterAuth {
   final ParseErrorLogger? errorLogger;
 
   Future<HttpResponse<SignUpResponse>> _signIn({
-    required SignInPhoneBody body,
+    required String phoneNumber,
+    required String password,
+    bool? rememberMe,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'phoneNumber': phoneNumber,
+      'password': password,
+      'rememberMe': rememberMe,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignUpResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -49,19 +57,27 @@ class _PhoneBetterAuth implements PhoneBetterAuth {
   }
 
   @override
-  Future<Result<SignUpResponse>> signIn({required SignInPhoneBody body}) {
+  Future<Result<SignUpResponse>> signIn({
+    required String phoneNumber,
+    required String password,
+    bool? rememberMe,
+  }) {
     return BetterAuthCallAdapter<SignUpResponse>().adapt(
-      () => _signIn(body: body),
+      () => _signIn(
+        phoneNumber: phoneNumber,
+        password: password,
+        rememberMe: rememberMe,
+      ),
     );
   }
 
   Future<HttpResponse<SendOTPResponse>> _sendOtp({
-    required PhoneBody body,
+    required String phoneNumber,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'phoneNumber': phoneNumber};
     final _options = _setStreamType<Result<SendOTPResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -85,19 +101,29 @@ class _PhoneBetterAuth implements PhoneBetterAuth {
   }
 
   @override
-  Future<Result<SendOTPResponse>> sendOtp({required PhoneBody body}) {
+  Future<Result<SendOTPResponse>> sendOtp({required String phoneNumber}) {
     return BetterAuthCallAdapter<SendOTPResponse>().adapt(
-      () => _sendOtp(body: body),
+      () => _sendOtp(phoneNumber: phoneNumber),
     );
   }
 
   Future<HttpResponse<SignUpResponse>> _verify({
-    required VerifyPhoneBody body,
+    required String phoneNumber,
+    required String code,
+    bool? disableSession,
+    String? updatePhoneNumber,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'phoneNumber': phoneNumber,
+      'code': code,
+      'disableSession': disableSession,
+      'updatePhoneNumber': updatePhoneNumber,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignUpResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -121,19 +147,29 @@ class _PhoneBetterAuth implements PhoneBetterAuth {
   }
 
   @override
-  Future<Result<SignUpResponse>> verify({required VerifyPhoneBody body}) {
+  Future<Result<SignUpResponse>> verify({
+    required String phoneNumber,
+    required String code,
+    bool? disableSession,
+    String? updatePhoneNumber,
+  }) {
     return BetterAuthCallAdapter<SignUpResponse>().adapt(
-      () => _verify(body: body),
+      () => _verify(
+        phoneNumber: phoneNumber,
+        code: code,
+        disableSession: disableSession,
+        updatePhoneNumber: updatePhoneNumber,
+      ),
     );
   }
 
   Future<HttpResponse<StatusResponse>> _requestPasswordResetOTP({
-    required PhoneBody body,
+    required String phoneNumber,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{'phoneNumber': phoneNumber};
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -158,20 +194,26 @@ class _PhoneBetterAuth implements PhoneBetterAuth {
 
   @override
   Future<Result<StatusResponse>> requestPasswordResetOTP({
-    required PhoneBody body,
+    required String phoneNumber,
   }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _requestPasswordResetOTP(body: body),
+      () => _requestPasswordResetOTP(phoneNumber: phoneNumber),
     );
   }
 
   Future<HttpResponse<StatusResponse>> _restPassword({
-    required ResetPhonePasswordBody body,
+    required String otp,
+    required String phoneNumber,
+    required String newPassword,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = body;
+    final _data = <String, dynamic>{
+      'otp': otp,
+      'phoneNumber': phoneNumber,
+      'newPassword': newPassword,
+    };
     final _options = _setStreamType<Result<StatusResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -196,10 +238,16 @@ class _PhoneBetterAuth implements PhoneBetterAuth {
 
   @override
   Future<Result<StatusResponse>> restPassword({
-    required ResetPhonePasswordBody body,
+    required String otp,
+    required String phoneNumber,
+    required String newPassword,
   }) {
     return BetterAuthCallAdapter<StatusResponse>().adapt(
-      () => _restPassword(body: body),
+      () => _restPassword(
+        otp: otp,
+        phoneNumber: phoneNumber,
+        newPassword: newPassword,
+      ),
     );
   }
 

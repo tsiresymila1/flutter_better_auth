@@ -5,10 +5,6 @@ import '../../core/api/adapter.dart';
 import '../../core/api/default/sign_up/models/sign_up_response/sign_up_response.dart';
 import '../../core/api/models/result/result.dart';
 import '../../core/api/models/result/status_response.dart';
-import 'models/phone_body.dart';
-import 'models/reset/reset_phone_password_body.dart';
-import 'models/sign_in_phone_body.dart';
-import 'models/verify/verify_phone_body.dart';
 import 'models/send_otp/send_otp_response.dart';
 
 part 'phone_better_auth.g.dart';
@@ -23,26 +19,33 @@ abstract class PhoneBetterAuth {
 
   @POST('/sign-in/phone-number')
   Future<Result<SignUpResponse>> signIn({
-    @Body(nullToAbsent: true) required SignInPhoneBody body,
+    @BodyExtra('phoneNumber') required String phoneNumber,
+    @BodyExtra('password') required String password,
+    @BodyExtra('rememberMe') bool? rememberMe,
   });
 
   @POST('/phone-number/send-otp')
   Future<Result<SendOTPResponse>> sendOtp({
-    @Body(nullToAbsent: true) required PhoneBody body,
+    @BodyExtra('phoneNumber') required String phoneNumber,
   });
 
   @POST('/phone-number/verify')
   Future<Result<SignUpResponse>> verify({
-    @Body(nullToAbsent: true) required VerifyPhoneBody body,
+    @BodyExtra('phoneNumber') required String phoneNumber,
+    @BodyExtra('code') required String code,
+    @BodyExtra('disableSession') bool? disableSession,
+    @BodyExtra('updatePhoneNumber') String? updatePhoneNumber,
   });
 
   @POST('/phone-number/request-password-reset')
   Future<Result<StatusResponse>> requestPasswordResetOTP({
-    @Body(nullToAbsent: true) required PhoneBody body,
+    @BodyExtra('phoneNumber') required String phoneNumber,
   });
 
   @POST('/phone-number/reset-password')
   Future<Result<StatusResponse>> restPassword({
-    @Body(nullToAbsent: true) required ResetPhonePasswordBody body,
+    @BodyExtra('otp') required String otp,
+    @BodyExtra('phoneNumber') required String phoneNumber,
+    @BodyExtra('newPassword') required String newPassword,
   });
 }
