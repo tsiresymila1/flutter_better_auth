@@ -538,7 +538,14 @@ await FlutterBetterAuth.initialize(
   store: HiveStorage(), // or your own StorageInterface implementation
 );
 ```
+A custom store implements:
 
+```dart
+abstract class StorageInterface {
+  Future<void> saveCookies(String host, List<Cookie> cookies);
+  Future<List<Cookie>> loadCookies(String host);
+}
+```
 ### Web
 
 On web the browser owns cookies (JavaScript cannot set the `Cookie` header), so
@@ -588,14 +595,7 @@ not `*`), `useSecureCookies` in production, and your web origin in
 > cross-subdomain cookies don't apply — use a reverse proxy for web social, or
 > test social on native (which uses the deep-link flow).
 
-A custom store implements:
 
-```dart
-abstract class StorageInterface {
-  Future<void> saveCookies(String host, List<Cookie> cookies);
-  Future<List<Cookie>> loadCookies(String host);
-}
-```
 
 ## Plugin imports
 
