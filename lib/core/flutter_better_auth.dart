@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_better_auth/core/storage/custom_persist_cookie_jar.dart'
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 
 import 'api/interceptor.dart';
+import 'api/web_credentials.dart';
 import 'storage/memory_storage.dart';
 
 class FlutterBetterAuth {
@@ -58,21 +58,20 @@ class FlutterBetterAuth {
         Dio(
           BaseOptions(
             headers: {
-              HttpHeaders.contentTypeHeader: 'application/json',
-              HttpHeaders.userAgentHeader: 'FlutterBetterAuth/1.0.0',
+              'content-type': 'application/json',
+              if (!kIsWeb) 'user-agent': 'FlutterBetterAuth/1.0.0',
             },
             validateStatus: (status) => status != null && status < 300,
           ),
         );
     final origin = scheme == null || scheme.isEmpty ? null : '$scheme://';
-    dioClient.options.headers.putIfAbsent(
-      HttpHeaders.contentTypeHeader,
-      () => 'application/json',
-    );
-    dioClient.options.headers.putIfAbsent(
-      HttpHeaders.userAgentHeader,
-      () => 'FlutterBetterAuth/1.0.0',
-    );
+    dioClient.options.headers.putIfAbsent('content-type', () => 'application/json');
+    if (!kIsWeb) {
+      dioClient.options.headers.putIfAbsent(
+        'user-agent',
+        () => 'FlutterBetterAuth/1.0.0',
+      );
+    }
     dioClient.options.headers['x-skip-oauth-proxy'] = 'true';
     if (origin != null) {
       dioClient.options.headers['expo-origin'] = origin;
@@ -81,7 +80,12 @@ class FlutterBetterAuth {
       store: storage,
       storage: MemoryStorage(),
     );
-    dioClient.interceptors.add(CookieManager(cookieJar));
+    if (kIsWeb) {
+      // The browser owns the Cookie header; let it persist/send cookies.
+      enableWebCredentials(dioClient);
+    } else {
+      dioClient.interceptors.add(CookieManager(cookieJar));
+    }
     dioClient.interceptors.add(RemoveNullsInterceptor());
     dioClient.interceptors.add(
       InterceptorsWrapper(

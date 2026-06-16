@@ -1,5 +1,15 @@
 # Changelog
 
+### 0.5.0
+
+**Added**
+
+- **Web support.** The client no longer pulls `dart:io` into the web build and skips the cookie jar on web — instead it enables `withCredentials` so the browser stores and sends Better Auth's session cookie automatically. See the **Web** section in the README for cross-origin/CORS notes.
+
+**Breaking**
+
+- `HiveStorage` is no longer re-exported from the package barrel (it is native-only). Import it directly when needed: `import 'package:flutter_better_auth/core/storage/hive_storage.dart';`.
+
 ### 0.4.0
 
 **Added**

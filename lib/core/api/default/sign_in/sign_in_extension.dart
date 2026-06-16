@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_better_auth/core/api/models/result/result_extension.dart';

@@ -55,7 +55,8 @@ export 'core/api/better_auth_client.dart';
 export 'core/flutter_better_auth.dart';
 export 'core/storage/storage.dart';
 export 'core/storage/secure_storage.dart';
-export 'core/storage/hive_storage.dart';
+// HiveStorage is native-only (uses dart:io); import it directly when needed:
+// import 'package:flutter_better_auth/core/storage/hive_storage.dart';
 export 'core/models/account/account.dart';
 export 'core/models/session/session.dart';
 // DEFAULT MODEL

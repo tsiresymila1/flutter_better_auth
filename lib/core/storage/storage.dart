@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:cookie_jar/cookie_jar.dart';
 
 abstract class StorageInterface {
   static late final String basePath;

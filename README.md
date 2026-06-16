@@ -519,8 +519,9 @@ By default, session cookies are stored **encrypted** on native platforms
 (`flutter_secure_storage`, chunked for the iOS Keychain). To customize, pass a `StorageInterface`:
 
 ```dart
-// Built-in unencrypted Hive store (opt-in):
+// Built-in unencrypted Hive store (opt-in, native only — uses dart:io):
 import 'package:flutter_better_auth/flutter_better_auth.dart';
+import 'package:flutter_better_auth/core/storage/hive_storage.dart';
 
 await HiveStorage.init(); // opens the Hive box first
 await FlutterBetterAuth.initialize(
@@ -528,6 +529,17 @@ await FlutterBetterAuth.initialize(
   store: HiveStorage(), // or your own StorageInterface implementation
 );
 ```
+
+### Web
+
+On web the browser owns cookies (JavaScript cannot set the `Cookie` header), so
+the client skips the cookie jar and instead enables `withCredentials` — the
+browser stores Better Auth's `Set-Cookie` and sends it automatically. Nothing to
+configure in the app. If your web app and server are **different origins**, the
+server must set the session cookie `SameSite=None; Secure`, send
+`Access-Control-Allow-Credentials: true` with a specific
+`Access-Control-Allow-Origin` (not `*`), and list your web origin in
+`trustedOrigins`.
 
 A custom store implements:
 
