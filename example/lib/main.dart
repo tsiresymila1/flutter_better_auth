@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -36,10 +39,22 @@ void main() async {
     return (v == null || v.isEmpty) ? null : v;
   }
 
-  await GoogleAuthService.init(
-    serverClientId: envOrNull('GOOGLE_SERVER_CLIENT_ID'),
-    clientId: envOrNull('GOOGLE_IOS_CLIENT_ID'),
-  );
+  try {
+    await GoogleAuthService.init(
+      serverClientId: envOrNull('GOOGLE_SERVER_CLIENT_ID'),
+      // On web, google_sign_in needs the WEB client id as `clientId`
+      // (the web origin must be an "Authorized JavaScript origin" of that
+      // client). On native, use the iOS client id (or null).
+      clientId: kIsWeb
+          ? envOrNull('GOOGLE_SERVER_CLIENT_ID')
+          : envOrNull('GOOGLE_IOS_CLIENT_ID'),
+    );
+  } catch (e) {
+    debugPrint('Google sign-in init skipped: $e');
+  }
+  // Detect an existing session on load (e.g. after returning from a web OAuth
+  // redirect).
+  unawaited(FlutterBetterAuth.refreshSession());
   runApp(const MyApp());
 }
 

@@ -1,5 +1,13 @@
 # Changelog
 
+### 0.6.0
+
+**Added**
+
+- **Web social sign-in.** On web, `signIn.social(...)` now does a full-page browser redirect to the provider instead of the native deep-link flow, and defaults `callbackURL` to the current app origin so Better Auth returns to your app (not the server root) after OAuth. Pass an explicit `callbackURL` to control the return route.
+- `social.linkAndRedirect(...)` — drives the account-linking OAuth round-trip (web full-page redirect / native web-auth), like `signIn.social`. Plain `social.link(...)` still just returns the authorization `url` for manual handling.
+- **Bearer-token auth** (Better Auth `bearer` plugin). The client now captures the `set-auth-token` response header on sign-in, persists it, and sends `Authorization: Bearer <token>` on subsequent requests. This makes auth work **across origins** (e.g. Flutter Web on a different origin than the server, where third-party cookies are blocked). No-op when the server doesn't issue the header. Cleared on sign-out.
+
 ### 0.5.0
 
 **Added**

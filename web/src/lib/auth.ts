@@ -23,20 +23,32 @@ export const auth = betterAuth({
     advanced: {
         cookiePrefix: "expense-manager",
 
+        // PRODUCTION (app + server on subdomains of one root domain, e.g.
+        // app.example.com + api.example.com): enable cross-subdomain cookies so
+        // the session cookie is first-party for both and web social works
+        // without third-party-cookie blocking. Does NOT help localhost + ngrok
+        // (no shared root domain) — use a reverse proxy in dev instead.
+        // crossSubDomainCookies: { enabled: true, domain: "yourdomain.com" },
+        // useSecureCookies: true, // prod = https
+
         useSecureCookies: false, // Ensure this matches your dev env (http vs https)
+        // LOCAL http (everything on localhost): Lax + non-secure so the browser
+        // actually stores the state/session cookies (Secure cookies are dropped
+        // on http). For a CROSS-SITE https setup (web app on a different origin
+        // than the server) switch these back to `sameSite: "none", secure: true`.
         cookies: {
             "expense-manager.session_token": {
                 attributes: {
                     httpOnly: false,
-                    sameSite: "none", // Required for cross-site auth flows
-                    secure: true, // Required if SameSite=None
+                    sameSite: "lax",
+                    secure: false,
                 },
             },
             state: {
                 attributes: {
-                    httpOnly: true, // State cookie doesn't need to be JS accessible
-                    sameSite: "none", // CRITICAL: Allows cookie to be sent on redirect from Provider
-                    secure: true, //
+                    httpOnly: true,
+                    sameSite: "lax",
+                    secure: false,
                 },
             },
         },
@@ -64,7 +76,7 @@ export const auth = betterAuth({
     rateLimit: {
         enabled: true,
     },
-    trustedOrigins: ["*", "myapp://"],
+    trustedOrigins: ["*", "myapp://","http://localhost:61938"],
 
     plugins: [
         jwt({

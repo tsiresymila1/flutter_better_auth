@@ -7,7 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_better_auth/core/storage/custom_persist_cookie_jar.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'api/bearer_interceptor.dart';
 import 'api/interceptor.dart';
 import 'api/web_credentials.dart';
 import 'storage/memory_storage.dart';
@@ -24,6 +26,27 @@ class FlutterBetterAuth {
   static String? appScheme;
   static StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
   static bool _wasOnline = true;
+
+  // Better Auth `bearer` plugin: the session token captured from the
+  // `set-auth-token` response header, sent as `Authorization: Bearer`.
+  static const String _bearerKey = 'better_auth_bearer_token';
+  static const FlutterSecureStorage _bearerStore = FlutterSecureStorage();
+  static String? _bearerToken;
+
+  /// Current bearer token, if the server's `bearer` plugin issued one.
+  static String? get bearerToken => _bearerToken;
+
+  /// Persists a new bearer token (called by the interceptor).
+  static void setBearerToken(String? token) {
+    _bearerToken = token;
+    if (token == null || token.isEmpty) {
+      unawaited(_bearerStore.delete(key: _bearerKey).catchError((_) {}));
+    } else {
+      unawaited(
+        _bearerStore.write(key: _bearerKey, value: token).catchError((_) {}),
+      );
+    }
+  }
 
   static Future<void> initialize({
     required String url,
@@ -86,6 +109,13 @@ class FlutterBetterAuth {
     } else {
       dioClient.interceptors.add(CookieManager(cookieJar));
     }
+    // Bearer-token fallback (works cross-origin where cookies are blocked).
+    try {
+      _bearerToken = await _bearerStore.read(key: _bearerKey);
+    } catch (_) {
+      _bearerToken = null;
+    }
+    dioClient.interceptors.add(BearerTokenInterceptor());
     dioClient.interceptors.add(RemoveNullsInterceptor());
     dioClient.interceptors.add(
       InterceptorsWrapper(
@@ -100,6 +130,7 @@ class FlutterBetterAuth {
               unawaited(_refreshSession());
             } else if (path.contains('/sign-out')) {
               await cookieJar.clearFor(Uri.parse(baseUrl));
+              setBearerToken(null);
               _authStreamController.add(null);
             }
           }
@@ -142,6 +173,7 @@ class FlutterBetterAuth {
     unawaited(_connectivitySub?.cancel());
     _connectivitySub = null;
     _wasOnline = true;
+    _bearerToken = null;
     _client = null;
     _initialized = false;
   }

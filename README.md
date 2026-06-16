@@ -260,6 +260,12 @@ await client.signIn.social(
 The client opens `/expo-authorization-proxy`, runs the OAuth round-trip in a secure web view,
 and persists the session cookie returned via the `myapp://` deep link.
 
+On **web**, `signIn.social(...)` instead does a full-page browser redirect to the
+provider and returns to `callbackURL` (defaults to the current app origin), with
+the browser handling the session cookie. The server's redirect/OAuth callback URLs
+must point at the server's own URL, and the OAuth provider's allowed callback must
+include `<server>/api/auth/callback/<provider>`.
+
 **Android** — register the callback activity in `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
@@ -304,6 +310,9 @@ Google Cloud setup (same project as the web client):
 ### Account linking
 
 ```dart
+// Link returns the authorization `url`; drive the redirect yourself, or use
+// linkAndRedirect (web: full-page redirect, native: web-auth, like signIn.social):
+await client.social.linkAndRedirect(provider: 'github', scopes: ['repo']);
 await client.social.link(provider: 'github', callbackURL: 'myapp://', scopes: ['repo']);
 await client.social.unlink(providerId: 'github');
 await client.social.listAccounts();
@@ -540,6 +549,44 @@ server must set the session cookie `SameSite=None; Secure`, send
 `Access-Control-Allow-Credentials: true` with a specific
 `Access-Control-Allow-Origin` (not `*`), and list your web origin in
 `trustedOrigins`.
+
+#### Web + separated server (different origins)
+
+When the web app and the Better Auth server are on **different origins**, the
+session cookie is **third-party** and modern browsers block it — so
+`getSession()` can return `null` right after a successful sign-in. There are two
+classes of flow:
+
+**Direct flows** (email, username, phone, email-OTP, etc.) — solved by the
+**`bearer` plugin**. Enable [`bearer`](https://www.better-auth.com/docs/plugins/bearer)
+on the server; the client automatically captures the `set-auth-token` header on
+sign-in and sends `Authorization: Bearer <token>` on every request. No cookies,
+works across any origin, nothing to configure in the client.
+
+**Social / OAuth (redirect) flows** — the OAuth round-trip happens via browser
+navigation, so the client can't capture a bearer token. Follow Better Auth's
+recommended cross-origin setup (cookies must reach the server):
+
+1. **Subdomains of one root domain (recommended).** Host app and server as
+   `app.example.com` / `api.example.com` and enable cross-subdomain cookies on
+   the server so the cookie is **first-party** for both:
+   ```ts
+   advanced: {
+     crossSubDomainCookies: { enabled: true, domain: "example.com" },
+   }
+   ```
+2. **Reverse proxy.** Route `/api/auth` through the **frontend's** domain
+   (Vercel/Next `rewrites`, nginx `proxy_pass`, etc.) so it's same-origin and the
+   cookie is first-party.
+
+Either way the server still needs CORS for credentials
+(`Access-Control-Allow-Credentials: true`, a specific `Access-Control-Allow-Origin`,
+not `*`), `useSecureCookies` in production, and your web origin in
+`trustedOrigins`.
+
+> Local dev with `localhost` + an ngrok/tunnel URL shares no root domain, so
+> cross-subdomain cookies don't apply — use a reverse proxy for web social, or
+> test social on native (which uses the deep-link flow).
 
 A custom store implements:
 

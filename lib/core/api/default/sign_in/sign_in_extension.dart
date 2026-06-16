@@ -9,6 +9,7 @@ import '../../../utils/logger.dart';
 import '../../better_auth_client.dart';
 import '../../models/result/better_error.dart';
 import '../../models/result/result.dart';
+import '../../web_redirect.dart';
 import '../social/social_extension.dart';
 import 'models/social/sign_in_social_response.dart';
 import 'models/social/social_id_token_body.dart';
@@ -27,6 +28,27 @@ extension SignInSocialExtension on SignInBetterAuth {
     bool? requestSignUp,
     String? loginHint,
   }) async {
+    // Web: no deep link. Do a full-page browser redirect to the provider and
+    // let Better Auth return to `callbackURL` (defaults to the app origin).
+    // The browser owns the session cookie, so nothing to persist here.
+    if (kIsWeb && idToken == null) {
+      final res = await socialAuth(
+        provider: provider,
+        callbackURL: callbackURL ?? currentOrigin(),
+        newUserCallbackURL: newUserCallbackURL,
+        errorCallbackURL: errorCallbackURL,
+        disableRedirect: disableRedirect,
+        scopes: scopes,
+        requestSignUp: requestSignUp,
+        loginHint: loginHint,
+      );
+      final url = res.data?.url;
+      if (url != null && url.isNotEmpty) {
+        redirectToUrl(url);
+      }
+      return res;
+    }
+
     final effectiveScheme = callbackUrlScheme ?? FlutterBetterAuth.appScheme;
     final normalizedCallbackURL = _resolveMobileCallbackURL(
       callbackURL,

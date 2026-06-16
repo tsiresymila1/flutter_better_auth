@@ -55,8 +55,8 @@ class _SocialTabState extends State<SocialTab> {
           'Link provider (redirect)',
           () => runAction(
             _console,
-            'social.link',
-            () => c.social.link(provider: _provider.text, callbackURL: 'myapp://'),
+            'social.linkAndRedirect',
+            () => c.social.linkAndRedirect(provider: _provider.text),
           ),
         ),
         Act(

@@ -1,6 +1,6 @@
 name: flutter_better_auth
 description: A Dart/Flutter client for the Better Auth platform, enabling secure sign-in, sign-up, and session management in Flutter applications.
-version: 0.5.0
+version: 0.6.0
 homepage: https://github.com/tsiresymila1/flutter_better_auth.git
 
 environment:
@@ -22,6 +22,7 @@ dependencies:
   logger: ^2.7.0
   path_provider: ^2.1.5
   retrofit: ^4.9.2
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:
