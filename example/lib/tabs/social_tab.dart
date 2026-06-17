@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_better_auth/flutter_better_auth.dart';
 
 import '../harness/widgets.dart';
-import '../services/google_auth.dart';
+import '../widgets/google_button.dart';
 
 class SocialTab extends StatefulWidget {
   const SocialTab({super.key});
@@ -39,15 +39,8 @@ class _SocialTabState extends State<SocialTab> {
             () => c.signIn.social(provider: 'github', callbackUrlScheme: 'myapp'),
           ),
         ),
-        const SectionLabel('Native idToken sign-in'),
-        Act(
-          'Google (idToken)',
-          () => runAction(
-            _console,
-            'google idToken',
-            () => GoogleAuthService.signIn(),
-          ),
-        ),
+        const SectionLabel('Google sign-in (native idToken / web GIS button)'),
+        GoogleSignInButton(console: _console),
         const SectionLabel('Account linking'),
         Field('provider', _provider),
         Field('accountId (unlink/refresh)', _accountId),
