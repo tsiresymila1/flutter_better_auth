@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.6.1
+
+**Fixed**
+
+- `social.linkAndRedirect` on **native**: now sends the `scheme://auth-callback` deep link as `callbackURL` and routes through the Better Auth authorization proxy (carrying the OAuth `state`), so linking returns to the app instead of the server home page and no longer fails the state check.
+
 ### 0.6.0
 
 **Added**
