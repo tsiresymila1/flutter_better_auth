@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.6.2
+
+**Fixed**
+
+- Signing out now clears the bearer token and fires `onAuthChange(null)`: the sign-out handler accepts any 2xx response (Better Auth may return `204`, which the previous `== 200` check skipped), and the bearer interceptor no longer re-captures a `set-auth-token` on the sign-out response.
+
 ### 0.6.1
 
 **Fixed**
