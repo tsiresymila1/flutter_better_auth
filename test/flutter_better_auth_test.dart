@@ -155,9 +155,11 @@ void main() {
               )
               as InterceptorsWrapper;
 
+      // 204 (no content) is a valid sign-out response; bearer must be cleared.
+      FlutterBetterAuth.setBearerToken('stale-token');
       final response = Response(
         requestOptions: RequestOptions(path: '/sign-out'),
-        statusCode: 200,
+        statusCode: 204,
       );
 
       final handler = ResponseInterceptorHandler();
@@ -168,6 +170,7 @@ void main() {
       );
       authInterceptor.onResponse(response, handler);
       await authChange;
+      expect(FlutterBetterAuth.bearerToken, isNull);
     });
   });
 }

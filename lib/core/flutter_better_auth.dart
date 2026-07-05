@@ -121,7 +121,8 @@ class FlutterBetterAuth {
       InterceptorsWrapper(
         onResponse: (response, handler) async {
           final path = response.requestOptions.path;
-          if (response.statusCode == 200) {
+          final ok = (response.statusCode ?? 0) < 300; // sign-out may return 204
+          if (ok) {
             if (path.contains('/sign-in') ||
                 path.contains('/sign-up') ||
                 path.contains('/update-user') ||

@@ -22,9 +22,12 @@ class BearerTokenInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    final token = response.headers.value('set-auth-token');
-    if (token != null && token.isNotEmpty) {
-      FlutterBetterAuth.setBearerToken(token);
+    // Don't re-capture a token on sign-out, or it would undo the clear.
+    if (!response.requestOptions.path.contains('/sign-out')) {
+      final token = response.headers.value('set-auth-token');
+      if (token != null && token.isNotEmpty) {
+        FlutterBetterAuth.setBearerToken(token);
+      }
     }
     handler.next(response);
   }
