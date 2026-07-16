@@ -22,6 +22,10 @@ _Session _$SessionFromJson(Map<String, dynamic> json) => _Session(
   impersonatedBy: json['impersonatedBy'] as String?,
   activeOrganizationId: json['activeOrganizationId'] as String?,
   activeTeamId: json['activeTeamId'] as String?,
+  additionalFields:
+      _readSessionAdditionalFields(json, 'additionalFields')
+          as Map<String, dynamic>? ??
+      const <String, dynamic>{},
 );
 
 Map<String, dynamic> _$SessionToJson(_Session instance) => <String, dynamic>{

@@ -11,6 +11,7 @@ import '../../models/result/better_error.dart';
 import '../../models/result/result.dart';
 import '../../web_redirect.dart';
 import '../social/social_extension.dart';
+import 'models/email/sign_in_email_response.dart';
 import 'models/social/sign_in_social_response.dart';
 import 'models/social/social_id_token_body.dart';
 import 'sign_in_better_auth.dart';
@@ -288,4 +289,42 @@ String? _extractSchemeFromUrl(String? url) {
     return null;
   }
   return parsed.scheme;
+}
+
+/// Typed `POST /sign-in/email` and `/sign-in/username`. [additionalFields]
+/// are flat-merged into the body — Better Auth accepts custom user fields
+/// ([`additionalFields`](https://www.better-auth.com/docs/concepts/database#extending-core-schema))
+/// as top-level keys.
+extension SignInEmailBetterAuth on SignInBetterAuth {
+  Future<Result<SignInEmailResponse>> email({
+    required String email,
+    required String password,
+    String? callbackURL,
+    bool? rememberMe,
+    Map<String, dynamic>? additionalFields,
+  }) =>
+      emailRaw(
+        body: {
+          'email': email,
+          'password': password,
+          'callbackURL': ?callbackURL,
+          'rememberMe': ?rememberMe,
+          ...?additionalFields,
+        },
+      );
+
+  Future<Result<SignInEmailResponse>> username({
+    required String username,
+    required String password,
+    bool? rememberMe,
+    Map<String, dynamic>? additionalFields,
+  }) =>
+      usernameRaw(
+        body: {
+          'username': username,
+          'password': password,
+          'rememberMe': ?rememberMe,
+          ...?additionalFields,
+        },
+      );
 }

@@ -16,6 +16,7 @@ passkeys, API keys, admin, phone, email-OTP, JWT, one-time-token, anonymous).
 - [Working with `Result`](#working-with-result)
 - [Session & auth state](#session--auth-state)
 - [Email & password](#email--password)
+- [Additional fields](#additional-fields-custom-user--session-data)
 - [Username](#username)
 - [Anonymous](#anonymous)
 - [Social / OAuth](#social--oauth) · [redirect](#redirect-flow-github-etc) · [idToken (Google)](#idtoken-flow-google-native)
@@ -209,6 +210,68 @@ await client.changeEmail(newEmail: 'new@mail.com');
 // Delete account
 await client.deleteUser(password: '12345678');
 ```
+
+## Additional fields (custom user & session data)
+
+Better Auth lets you add custom columns to the `user` and `session` tables via
+[`additionalFields`](https://www.better-auth.com/docs/concepts/database#extending-core-schema).
+The server merges them as flat top-level keys into the `user`/`session` JSON, so
+this client collects every key the static models don't own into an
+`additionalFields` map rather than dropping it.
+
+### Reading custom fields
+
+`User` and `Session` expose an `additionalFields` map and a typed `field<T>()`
+accessor:
+
+```dart
+final res = await client.getSession();
+final user = res.data!.user!;
+final session = res.data!.session!;
+
+user.additionalFields['firstName'];        // dynamic
+user.field<String>('firstName');           // typed, or null if absent
+user.field<String>('role') ?? 'user';      // with a default
+session.field<String>('theme');            // session custom fields too
+```
+
+For fields you read often, add your own extension so call sites stay typo-safe
+and your server schema is the single source of truth:
+
+```dart
+extension MyUserFields on User {
+  String? get firstName => field('firstName');
+  String get role => field<String>('role') ?? 'user';
+}
+```
+
+> A field declared with `returned: false` on the server is stripped from the
+> response before it reaches the client, so it can't be read here — that's a
+> server-side setting, not a client limitation.
+
+### Writing custom fields
+
+Pass `additionalFields` to sign-up / update calls. Entries are flat-merged into
+the request body as top-level keys (Better Auth's wire format), so the example
+below sends `firstName`/`lastName` next to `name`/`email`/`password`:
+
+```dart
+await client.signUp.email(
+  name: 'Jane Doe',
+  email: 'j@x.io',
+  password: '12345678',
+  additionalFields: {'firstName': 'Jane', 'lastName': 'Doe'},
+);
+
+await client.updateUser(
+  additionalFields: {'firstName': 'Jane', 'lang': 'fr'},
+);
+```
+
+`signIn.email(...)` and `signIn.username(...)` accept `additionalFields` too.
+For full control over the body (e.g. nested values), use the raw variants
+`emailRaw` / `usernameRaw` on the sign-in/up clients and `updateUserRaw` — the
+same convention as the organization plugin's `*Raw` methods.
 
 ## Username
 

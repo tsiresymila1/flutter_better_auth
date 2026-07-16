@@ -15,11 +15,10 @@ abstract class SignUpBetterAuth {
     ParseErrorLogger? errorLogger,
   }) = _SignUpBetterAuth;
 
+  /// Raw `POST /sign-up/email` body. Prefer the typed `email` extension on
+  /// [SignUpBetterAuth], which builds this map and flat-merges `additionalFields`.
   @POST('/sign-up/email')
-  Future<Result<SignUpResponse>> email({
-    @BodyExtra('name') required String name,
-    @BodyExtra('email') required String email,
-    @BodyExtra('password') required String password,
-    @BodyExtra('callbackURL') String? callbackURL,
+  Future<Result<SignUpResponse>> emailRaw({
+    @Body(nullToAbsent: true) required Map<String, dynamic> body,
   });
 }

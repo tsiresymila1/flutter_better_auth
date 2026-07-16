@@ -360,15 +360,14 @@ class _BetterAuthClient implements BetterAuthClient {
     );
   }
 
-  Future<HttpResponse<UserWrapperResponse>> _updateUser({
-    String? name,
-    String? image,
+  Future<HttpResponse<UserWrapperResponse>> _updateUserRaw({
+    required Map<String, dynamic> body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{'name': name, 'image': image};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
     _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<UserWrapperResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
@@ -393,12 +392,11 @@ class _BetterAuthClient implements BetterAuthClient {
   }
 
   @override
-  Future<Result<UserWrapperResponse>> updateUser({
-    String? name,
-    String? image,
+  Future<Result<UserWrapperResponse>> updateUserRaw({
+    required Map<String, dynamic> body,
   }) {
     return BetterAuthCallAdapter<UserWrapperResponse>().adapt(
-      () => _updateUser(name: name, image: image),
+      () => _updateUserRaw(body: body),
     );
   }
 

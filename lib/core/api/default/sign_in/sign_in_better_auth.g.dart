@@ -95,22 +95,14 @@ class _SignInBetterAuth implements SignInBetterAuth {
     );
   }
 
-  Future<HttpResponse<SignInEmailResponse>> _email({
-    required String email,
-    required String password,
-    String? callbackURL,
-    bool? rememberMe,
+  Future<HttpResponse<SignInEmailResponse>> _emailRaw({
+    required Map<String, dynamic> body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{
-      'email': email,
-      'password': password,
-      'callbackURL': callbackURL,
-      'rememberMe': rememberMe,
-    };
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
     _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignInEmailResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
@@ -135,36 +127,22 @@ class _SignInBetterAuth implements SignInBetterAuth {
   }
 
   @override
-  Future<Result<SignInEmailResponse>> email({
-    required String email,
-    required String password,
-    String? callbackURL,
-    bool? rememberMe,
+  Future<Result<SignInEmailResponse>> emailRaw({
+    required Map<String, dynamic> body,
   }) {
     return BetterAuthCallAdapter<SignInEmailResponse>().adapt(
-      () => _email(
-        email: email,
-        password: password,
-        callbackURL: callbackURL,
-        rememberMe: rememberMe,
-      ),
+      () => _emailRaw(body: body),
     );
   }
 
-  Future<HttpResponse<SignInEmailResponse>> _username({
-    required String username,
-    required String password,
-    bool? rememberMe,
+  Future<HttpResponse<SignInEmailResponse>> _usernameRaw({
+    required Map<String, dynamic> body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{
-      'username': username,
-      'password': password,
-      'rememberMe': rememberMe,
-    };
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
     _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignInEmailResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
@@ -189,17 +167,11 @@ class _SignInBetterAuth implements SignInBetterAuth {
   }
 
   @override
-  Future<Result<SignInEmailResponse>> username({
-    required String username,
-    required String password,
-    bool? rememberMe,
+  Future<Result<SignInEmailResponse>> usernameRaw({
+    required Map<String, dynamic> body,
   }) {
     return BetterAuthCallAdapter<SignInEmailResponse>().adapt(
-      () => _username(
-        username: username,
-        password: password,
-        rememberMe: rememberMe,
-      ),
+      () => _usernameRaw(body: body),
     );
   }
 
