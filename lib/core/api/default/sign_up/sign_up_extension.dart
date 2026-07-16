@@ -24,12 +24,13 @@ extension SignUpEmailBetterAuth on SignUpBetterAuth {
     Map<String, dynamic>? additionalFields,
   }) =>
       emailRaw(
+        // Spread first so the typed fields below win on key collision.
         body: {
+          ...?additionalFields,
           'name': name,
           'email': email,
           'password': password,
           'callbackURL': ?callbackURL,
-          ...?additionalFields,
         },
       );
 }

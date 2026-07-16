@@ -72,7 +72,8 @@ void main() {
       'email': 'j@x.io',
       'firstName': 'Jane',
       'loginCount': 42,
-      'prefs': <String, dynamic>{'theme': 'dark'},
+      // Stored as a JSON string so `field()` needs the decode callback to read it.
+      'prefs': jsonEncode(<String, dynamic>{'theme': 'dark'}),
     });
 
     test('returns a typed value', () {
@@ -86,7 +87,10 @@ void main() {
     });
 
     test('decodes nested JSON via decode', () {
-      final prefs = user.field<Map<String, dynamic>>('prefs');
+      final prefs = user.field<Map<String, dynamic>>(
+        'prefs',
+        decode: (value) => jsonDecode(value as String) as Map<String, dynamic>,
+      );
       expect(prefs?['theme'], 'dark');
     });
 

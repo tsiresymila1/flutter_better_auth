@@ -13,10 +13,11 @@ extension UpdateUserBetterAuth on BetterAuthClient {
     Map<String, dynamic>? additionalFields,
   }) =>
       updateUserRaw(
+        // Spread first so the typed fields below win on key collision.
         body: {
+          ...?additionalFields,
           'name': ?name,
           'image': ?image,
-          ...?additionalFields,
         },
       );
 }

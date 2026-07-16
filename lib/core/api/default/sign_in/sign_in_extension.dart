@@ -304,12 +304,13 @@ extension SignInEmailBetterAuth on SignInBetterAuth {
     Map<String, dynamic>? additionalFields,
   }) =>
       emailRaw(
+        // Spread first so the typed fields below win on key collision.
         body: {
+          ...?additionalFields,
           'email': email,
           'password': password,
           'callbackURL': ?callbackURL,
           'rememberMe': ?rememberMe,
-          ...?additionalFields,
         },
       );
 
@@ -320,11 +321,12 @@ extension SignInEmailBetterAuth on SignInBetterAuth {
     Map<String, dynamic>? additionalFields,
   }) =>
       usernameRaw(
+        // Spread first so the typed fields below win on key collision.
         body: {
+          ...?additionalFields,
           'username': username,
           'password': password,
           'rememberMe': ?rememberMe,
-          ...?additionalFields,
         },
       );
 }
