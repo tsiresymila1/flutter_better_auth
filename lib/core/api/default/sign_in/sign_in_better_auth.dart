@@ -32,19 +32,16 @@ abstract class SignInBetterAuth {
     @BodyExtra('loginHint') String? loginHint,
   });
 
+  /// Raw `POST /sign-in/email` body. Prefer the typed `email` extension.
   @POST('/sign-in/email')
-  Future<Result<SignInEmailResponse>> email({
-    @BodyExtra('email') required String email,
-    @BodyExtra('password') required String password,
-    @BodyExtra('callbackURL') String? callbackURL,
-    @BodyExtra('rememberMe') bool? rememberMe,
+  Future<Result<SignInEmailResponse>> emailRaw({
+    @Body(nullToAbsent: true) required Map<String, dynamic> body,
   });
 
+  /// Raw `POST /sign-in/username` body. Prefer the typed `username` extension.
   @POST('/sign-in/username')
-  Future<Result<SignInEmailResponse>> username({
-    @BodyExtra('username') required String username,
-    @BodyExtra('password') required String password,
-    @BodyExtra('rememberMe') bool? rememberMe,
+  Future<Result<SignInEmailResponse>> usernameRaw({
+    @Body(nullToAbsent: true) required Map<String, dynamic> body,
   });
 
   /// Better Auth [`anonymous`](https://www.better-auth.com/docs/plugins/anonymous) plugin.

@@ -19,22 +19,14 @@ class _SignUpBetterAuth implements SignUpBetterAuth {
 
   final ParseErrorLogger? errorLogger;
 
-  Future<HttpResponse<SignUpResponse>> _email({
-    required String name,
-    required String email,
-    required String password,
-    String? callbackURL,
+  Future<HttpResponse<SignUpResponse>> _emailRaw({
+    required Map<String, dynamic> body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{
-      'name': name,
-      'email': email,
-      'password': password,
-      'callbackURL': callbackURL,
-    };
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
     _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<Result<SignUpResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
@@ -59,19 +51,11 @@ class _SignUpBetterAuth implements SignUpBetterAuth {
   }
 
   @override
-  Future<Result<SignUpResponse>> email({
-    required String name,
-    required String email,
-    required String password,
-    String? callbackURL,
+  Future<Result<SignUpResponse>> emailRaw({
+    required Map<String, dynamic> body,
   }) {
     return BetterAuthCallAdapter<SignUpResponse>().adapt(
-      () => _email(
-        name: name,
-        email: email,
-        password: password,
-        callbackURL: callbackURL,
-      ),
+      () => _emailRaw(body: body),
     );
   }
 

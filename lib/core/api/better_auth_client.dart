@@ -68,10 +68,11 @@ abstract class BetterAuthClient {
     @BodyExtra('revokeOtherSessions') bool? revokeOtherSessions,
   });
 
+  /// Raw `POST /update-user` body. Prefer the typed `updateUser` extension,
+  /// which builds this map and flat-merges `additionalFields`.
   @POST('/update-user')
-  Future<Result<UserWrapperResponse>> updateUser({
-    @BodyExtra('name') String? name,
-    @BodyExtra('image') String? image,
+  Future<Result<UserWrapperResponse>> updateUserRaw({
+    @Body(nullToAbsent: true) required Map<String, dynamic> body,
   });
 
   @POST('/delete-user')

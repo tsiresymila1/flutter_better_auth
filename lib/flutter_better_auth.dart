@@ -52,6 +52,7 @@ export 'core/api/models/result/result.dart';
 export 'core/api/models/result/result_extension.dart';
 export 'core/api/models/session/session_response.dart';
 export 'core/api/better_auth_client.dart';
+export 'core/api/better_auth_client_extension.dart';
 export 'core/flutter_better_auth.dart';
 export 'core/storage/storage.dart';
 export 'core/storage/secure_storage.dart';
@@ -61,6 +62,7 @@ export 'core/models/account/account.dart';
 export 'core/models/session/session.dart';
 // DEFAULT MODEL
 
+export 'core/models/additional_fields.dart';
 export 'core/models/user/user.dart';
 export 'core/models/verification/verification.dart';
 export 'presentation/better_auth_consumer.dart';
