@@ -1,5 +1,13 @@
 # Changelog
 
+### 0.6.3
+
+**Added**
+
+- Support for Better Auth **`additionalFields`** on users and sessions ([#14](https://github.com/tsiresymila1/flutter_better_auth/pull/14)):
+    - **Reading:** `User` and `Session` keep an `additionalFields` map of every server key the static models don't claim, plus a typed accessor — `user.field<String>('firstName')`.
+    - **Writing:** `signUp.email`, `signIn.email` / `signIn.username`, and `updateUser` accept an `additionalFields` map, flat-merged as top-level request keys. Backed by `*Raw` (`@Body Map`) retrofit variants with typed extension wrappers, matching `signIn.social` / organization.
+
 ### 0.6.2
 
 **Fixed**
