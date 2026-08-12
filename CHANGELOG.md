@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.6.4
+
+**Fixed**
+
+- `forgotPassword()` now calls Better Auth's `/request-password-reset` endpoint instead of the removed `/forget-password`, matching the endpoint rename in Better Auth 1.6.27.
+
+
 ### 0.6.3
 
 **Added**
