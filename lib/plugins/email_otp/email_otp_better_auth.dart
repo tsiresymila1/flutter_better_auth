@@ -39,6 +39,12 @@ abstract class EmailOtpBetterAuth {
     @BodyExtra('email') required String email,
   });
 
+  /// Requests a password reset OTP sent to the specified [email].
+  @POST('/email-otp/request-password-reset')
+  Future<Result<SuccessResponse>> requestPasswordReset({
+    @BodyExtra('email') required String email,
+  });
+
   @POST('/email-otp/reset-password')
   Future<Result<SuccessResponse>> resetPassword({
     @BodyExtra('email') required String email,
