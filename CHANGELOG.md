@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.6.5
+
+**Added**
+
+- Support for requesting a password reset OTP via `client.emailOtp.requestPasswordReset(email:)` (`POST /email-otp/request-password-reset`).
+
 ### 0.6.4
 
 **Fixed**
