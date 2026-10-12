@@ -122,6 +122,12 @@ class FlutterBetterAuth {
     dioClient.interceptors.add(RemoveNullsInterceptor());
     dioClient.interceptors.add(
       InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Stamp the auth generation so a late 401 from before a newer
+          // state change can be recognised as stale.
+          options.extra['_authGen'] = _authGen;
+          handler.next(options);
+        },
         onResponse: (response, handler) async {
           final path = response.requestOptions.path;
           final ok = (response.statusCode ?? 0) < 300; // sign-out may return 204
@@ -143,7 +149,10 @@ class FlutterBetterAuth {
         onError: (error, handler) {
           // A failed sign-in/sign-up (wrong password) is not a lost session.
           final path = error.requestOptions.path;
+          final stamped = error.requestOptions.extra['_authGen'];
+          final stale = stamped is int && stamped != _authGen;
           if (error.response?.statusCode == 401 &&
+              !stale &&
               !path.contains('/sign-in') &&
               !path.contains('/sign-up')) {
             _emitUser(null);
@@ -185,6 +194,7 @@ class FlutterBetterAuth {
     _currentUser = null;
     _hasUser = false;
     _authGen = 0;
+    _refreshSeq = 0;
     _client = null;
     _initialized = false;
   }
@@ -200,6 +210,7 @@ class FlutterBetterAuth {
   // Bumped on every emit so a refresh that started earlier can't overwrite a
   // newer state (e.g. a sign-out that finished first).
   static int _authGen = 0;
+  static int _refreshSeq = 0;
 
   static void _emitUser(User? user) {
     _authGen++;
@@ -225,8 +236,10 @@ class FlutterBetterAuth {
   static Future<void> _refreshSession() async {
     try {
       final gen = _authGen;
+      final seq = ++_refreshSeq;
       final result = await client.getSession();
-      if (gen != _authGen) return;
+      // Drop the result if auth state changed, or a newer refresh started.
+      if (gen != _authGen || seq != _refreshSeq) return;
       result.maybeWhen(
         orElse: () {
           _emitUser(null);

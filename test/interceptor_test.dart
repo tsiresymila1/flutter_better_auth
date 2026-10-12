@@ -77,4 +77,11 @@ void main() {
     expect(out['user']['createdAt'], '2020-01-01T00:00:00.000Z');
     expect(out['user']['age'], 1823330058165);
   });
+
+  test('epochDatesToIso keeps Map<String, dynamic> typing', () {
+    final out = epochDatesToIso(<String, dynamic>{
+      'items': [<String, dynamic>{'id': 'a'}],
+    }) as Map<String, dynamic>;
+    expect((out['items'] as List).first, isA<Map<String, dynamic>>());
+  });
 }

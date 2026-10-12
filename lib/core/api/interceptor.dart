@@ -80,7 +80,8 @@ bool _isDateKey(String k) => k.endsWith('At') || k.endsWith('Expires');
 Object? epochDatesToIso(Object? v) {
   if (v is List) return v.map(epochDatesToIso).toList();
   if (v is Map) {
-    return v.map((k, val) {
+    // JSON keys are strings; keep the static type models cast to.
+    return v.map<String, dynamic>((k, val) {
       if (k is String && _isDateKey(k) && val is num && val > 1e11) {
         return MapEntry(
           k,
@@ -88,7 +89,7 @@ Object? epochDatesToIso(Object? v) {
               .toIso8601String(),
         );
       }
-      return MapEntry(k, epochDatesToIso(val));
+      return MapEntry(k.toString(), epochDatesToIso(val));
     });
   }
   return v;
