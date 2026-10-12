@@ -9,6 +9,10 @@ abstract class BetterError with _$BetterError {
     @Default("ERROR") String code,
     required String message,
     required String? stack,
+
+    /// `DioExceptionType` name when no HTTP response was received
+    /// (`connectionTimeout`, `connectionError`, ...). Null otherwise.
+    String? dioType,
   }) = _BetterError;
 
   factory BetterError.fromJson(Map<String, dynamic> json) =>

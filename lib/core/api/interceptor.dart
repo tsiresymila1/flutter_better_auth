@@ -7,6 +7,14 @@ class RemoveNullsInterceptor extends Interceptor {
         urlPath.endsWith('/organization/set-active');
   }
 
+  /// Some servers (e.g. Convex) return dates as epoch milliseconds; the models
+  /// parse ISO strings. Rewrite epoch-ms numbers on date-like keys to ISO.
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    response.data = epochDatesToIso(response.data);
+    handler.next(response);
+  }
+
   static const _bodyMethods = {'POST', 'PUT', 'PATCH'};
 
   @override
@@ -64,4 +72,24 @@ class RemoveNullsInterceptor extends Interceptor {
       return false;
     }
   }
+}
+
+bool _isDateKey(String k) => k.endsWith('At') || k.endsWith('Expires');
+
+// ponytail: key-name heuristic (*At / *Expires), ms values only (> 1e11).
+Object? epochDatesToIso(Object? v) {
+  if (v is List) return v.map(epochDatesToIso).toList();
+  if (v is Map) {
+    return v.map((k, val) {
+      if (k is String && _isDateKey(k) && val is num && val > 1e11) {
+        return MapEntry(
+          k,
+          DateTime.fromMillisecondsSinceEpoch(val.toInt(), isUtc: true)
+              .toIso8601String(),
+        );
+      }
+      return MapEntry(k, epochDatesToIso(val));
+    });
+  }
+  return v;
 }

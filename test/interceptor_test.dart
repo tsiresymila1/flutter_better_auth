@@ -67,4 +67,14 @@ void main() {
       expect(options.data, isNull);
     });
   });
+
+  test('epochDatesToIso converts epoch-ms date keys only', () {
+    final out = epochDatesToIso({
+      'session': {'expiresAt': 1823330058165, 'ipAddress': 'x'},
+      'user': {'createdAt': '2020-01-01T00:00:00.000Z', 'age': 1823330058165},
+    }) as Map;
+    expect(out['session']['expiresAt'], '2027-10-12T08:34:18.165Z');
+    expect(out['user']['createdAt'], '2020-01-01T00:00:00.000Z');
+    expect(out['user']['age'], 1823330058165);
+  });
 }
