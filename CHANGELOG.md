@@ -1,6 +1,6 @@
 # Changelog
 
-### 0.7.0
+### 0.6.6
 
 Compatibility with Better Auth servers that deviate from the reference setup, such as Convex ([#17](https://github.com/tsiresymila1/flutter_better_auth/issues/17)).
 
