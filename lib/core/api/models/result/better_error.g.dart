@@ -10,6 +10,7 @@ _BetterError _$BetterErrorFromJson(Map<String, dynamic> json) => _BetterError(
   code: json['code'] as String? ?? "ERROR",
   message: json['message'] as String,
   stack: json['stack'] as String?,
+  dioType: json['dioType'] as String?,
 );
 
 Map<String, dynamic> _$BetterErrorToJson(_BetterError instance) =>
@@ -17,4 +18,5 @@ Map<String, dynamic> _$BetterErrorToJson(_BetterError instance) =>
       'code': instance.code,
       'message': instance.message,
       'stack': instance.stack,
+      'dioType': instance.dioType,
     };

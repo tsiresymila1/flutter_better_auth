@@ -30,6 +30,7 @@ passkeys, API keys, admin, phone, email-OTP, JWT, one-time-token, anonymous).
 - [API Key](#api-key)
 - [Organization](#organization)
 - [JWT](#jwt)
+- [Convex](#convex)
 - [One-Time Token](#one-time-token)
 - [Storage](#storage)
 - [Plugin imports](#plugin-imports)
@@ -572,6 +573,19 @@ import 'package:flutter_better_auth/plugins/jwt/jwt_plugin.dart';
 
 final token = await client.jwt.token();  // signed JWT for the current session
 final jwks = await client.jwt.jwks();     // public JWKS
+```
+
+
+## Convex
+
+For servers using [`@convex-dev/better-auth`](https://github.com/get-convex/better-auth) (`convex()` plugin).
+
+```dart
+import 'package:flutter_better_auth/plugins/convex/convex_plugin.dart';
+
+final token = await client.convex.token(); // raw GET /convex/token
+// Cached JWT, refreshed shortly before expiry; use as Convex's fetchToken:
+final jwt = await client.convexToken.fetchToken(forceRefreshToken: false);
 ```
 
 ## One-Time Token

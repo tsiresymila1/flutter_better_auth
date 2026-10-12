@@ -60,5 +60,40 @@ void main() {
       expect(result.error, isNotNull);
       expect(result.error!.message, contains('kaboom'));
     });
+
+    test('does not throw on a non-JSON error body or null message', () async {
+      final adapter = BetterAuthCallAdapter<String>();
+
+      final result = await adapter.adapt(() async {
+        throw DioException(
+          requestOptions: reqOpts,
+          response: Response(
+            requestOptions: reqOpts,
+            statusCode: 502,
+            data: '<html>Bad Gateway</html>',
+          ),
+        );
+      });
+
+      expect(result.error?.code, 'ERROR');
+      expect(result.error?.message, isNotEmpty);
+    });
+
+    test('reports PARSE_ERROR for a body that fails to parse', () async {
+      final adapter = BetterAuthCallAdapter<String>();
+      final result = await adapter.adapt(() async => throw TypeError());
+      expect(result.error?.code, 'PARSE_ERROR');
+    });
+
+    test('exposes the Dio exception type when there is no response', () async {
+      final adapter = BetterAuthCallAdapter<String>();
+      final result = await adapter.adapt(() async {
+        throw DioException(
+          requestOptions: reqOpts,
+          type: DioExceptionType.connectionTimeout,
+        );
+      });
+      expect(result.error?.dioType, 'connectionTimeout');
+    });
   });
 }
