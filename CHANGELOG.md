@@ -21,6 +21,19 @@ Compatibility with Better Auth servers that deviate from the reference setup, su
 - Stale 401s and older session refreshes can no longer overwrite a newer auth state (e.g. re-emitting the old user after sign-out).
 - `flutter_secure_storage` constraint widened to `>=10.3.1 <12.0.0`.
 
+### 0.6.5
+
+**Added**
+
+- Support for requesting a password reset OTP via `client.emailOtp.requestPasswordReset(email:)` (`POST /email-otp/request-password-reset`).
+
+### 0.6.4
+
+**Fixed**
+
+- `forgotPassword()` now calls Better Auth's `/request-password-reset` endpoint instead of the removed `/forget-password`, matching the endpoint rename in Better Auth 1.6.27.
+
+
 ### 0.6.3
 
 **Added**

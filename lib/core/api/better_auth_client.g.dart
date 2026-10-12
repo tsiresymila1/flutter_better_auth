@@ -107,7 +107,7 @@ class _BetterAuthClient implements BetterAuthClient {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/forget-password',
+            '/request-password-reset',
             queryParameters: queryParameters,
             data: _data,
           )

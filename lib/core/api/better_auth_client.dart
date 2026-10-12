@@ -31,7 +31,7 @@ abstract class BetterAuthClient {
     @Body(nullToAbsent: true) Map<String, dynamic> body = const {},
   });
 
-  @POST('/forget-password')
+  @POST('/request-password-reset')
   Future<Result<StatusResponse>> forgotPassword({
     @BodyExtra('email') required String email,
     @BodyExtra('redirectTo') String? redirectTo,
