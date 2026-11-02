@@ -98,6 +98,10 @@ void main() {
       expect(interceptors.any((i) => i is InterceptorsWrapper), isTrue);
     });
 
+    test('currentUser is null before any auth state is known', () {
+      expect(FlutterBetterAuth.currentUser, isNull);
+    });
+
     test('onAuthChange emits null on 401 error', () async {
       final interceptors = Interceptors();
       when(() => mockDio.interceptors).thenReturn(interceptors);

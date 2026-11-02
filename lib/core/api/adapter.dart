@@ -19,17 +19,26 @@ class BetterAuthCallAdapter<T>
       // final status = res?.statusCode;
       // logger.e("DioException", error: e, stackTrace: s);
       // logger.e("Status: $status, Body: $body");
+      // Body may be non-JSON (e.g. an HTML 502 page) or lack code/message.
+      final body = res?.data;
+      final code = body is Map ? body['code'] : null;
+      final message = body is Map ? body['message'] : null;
       return Result.err(
         BetterError(
-          code: res?.data?['code'] ?? "ERROR",
-          message: res?.data?['message'] ?? e.message,
+          code: code is String ? code : "ERROR",
+          message: message is String ? message : (e.message ?? e.toString()),
           stack: s.toString(),
+          dioType: res == null ? e.type.name : null,
         ),
       );
     } catch (e, s) {
-      // logger.e("Unknown Error", error: e, stackTrace: s);
+      // A 2xx body that doesn't fit the model (TypeError/FormatException).
       return Result.err(
-        BetterError(message: e.toString(), stack: s.toString()),
+        BetterError(
+          code: e is TypeError || e is FormatException ? 'PARSE_ERROR' : 'ERROR',
+          message: e.toString(),
+          stack: s.toString(),
+        ),
       );
     }
   }

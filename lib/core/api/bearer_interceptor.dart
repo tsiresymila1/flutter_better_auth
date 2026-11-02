@@ -24,7 +24,16 @@ class BearerTokenInterceptor extends Interceptor {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     // Don't re-capture a token on sign-out, or it would undo the clear.
     if (!response.requestOptions.path.contains('/sign-out')) {
-      final token = response.headers.value('set-auth-token');
+      var token = response.headers.value('set-auth-token');
+      // Servers without the bearer response hook (e.g. Convex) only return the
+      // session token in the sign-in body.
+      final body = response.data;
+      if ((token == null || token.isEmpty) &&
+          response.requestOptions.path.contains('/sign-in') &&
+          body is Map &&
+          body['token'] is String) {
+        token = body['token'] as String;
+      }
       if (token != null && token.isNotEmpty) {
         FlutterBetterAuth.setBearerToken(token);
       }

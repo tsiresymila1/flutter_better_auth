@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BetterError {
 
- String get code; String get message; String? get stack;
+ String get code; String get message; String? get stack;/// `DioExceptionType` name when no HTTP response was received
+/// (`connectionTimeout`, `connectionError`, ...). Null otherwise.
+ String? get dioType;
 /// Create a copy of BetterError
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $BetterErrorCopyWith<BetterError> get copyWith => _$BetterErrorCopyWithImpl<Bett
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BetterError&&(identical(other.code, code) || other.code == code)&&(identical(other.message, message) || other.message == message)&&(identical(other.stack, stack) || other.stack == stack));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BetterError&&(identical(other.code, code) || other.code == code)&&(identical(other.message, message) || other.message == message)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.dioType, dioType) || other.dioType == dioType));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,code,message,stack);
+int get hashCode => Object.hash(runtimeType,code,message,stack,dioType);
 
 @override
 String toString() {
-  return 'BetterError(code: $code, message: $message, stack: $stack)';
+  return 'BetterError(code: $code, message: $message, stack: $stack, dioType: $dioType)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $BetterErrorCopyWith<$Res>  {
   factory $BetterErrorCopyWith(BetterError value, $Res Function(BetterError) _then) = _$BetterErrorCopyWithImpl;
 @useResult
 $Res call({
- String code, String message, String? stack
+ String code, String message, String? stack, String? dioType
 });
 
 
@@ -65,11 +67,12 @@ class _$BetterErrorCopyWithImpl<$Res>
 
 /// Create a copy of BetterError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? code = null,Object? message = null,Object? stack = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? code = null,Object? message = null,Object? stack = freezed,Object? dioType = freezed,}) {
   return _then(_self.copyWith(
 code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String,stack: freezed == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
+as String?,dioType: freezed == dioType ? _self.dioType : dioType // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -155,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String code,  String message,  String? stack)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String code,  String message,  String? stack,  String? dioType)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BetterError() when $default != null:
-return $default(_that.code,_that.message,_that.stack);case _:
+return $default(_that.code,_that.message,_that.stack,_that.dioType);case _:
   return orElse();
 
 }
@@ -176,10 +179,10 @@ return $default(_that.code,_that.message,_that.stack);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String code,  String message,  String? stack)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String code,  String message,  String? stack,  String? dioType)  $default,) {final _that = this;
 switch (_that) {
 case _BetterError():
-return $default(_that.code,_that.message,_that.stack);case _:
+return $default(_that.code,_that.message,_that.stack,_that.dioType);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +199,10 @@ return $default(_that.code,_that.message,_that.stack);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String code,  String message,  String? stack)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String code,  String message,  String? stack,  String? dioType)?  $default,) {final _that = this;
 switch (_that) {
 case _BetterError() when $default != null:
-return $default(_that.code,_that.message,_that.stack);case _:
+return $default(_that.code,_that.message,_that.stack,_that.dioType);case _:
   return null;
 
 }
@@ -211,12 +214,15 @@ return $default(_that.code,_that.message,_that.stack);case _:
 @JsonSerializable()
 
 class _BetterError implements BetterError {
-  const _BetterError({this.code = "ERROR", required this.message, required this.stack});
+  const _BetterError({this.code = "ERROR", required this.message, required this.stack, this.dioType});
   factory _BetterError.fromJson(Map<String, dynamic> json) => _$BetterErrorFromJson(json);
 
 @override@JsonKey() final  String code;
 @override final  String message;
 @override final  String? stack;
+/// `DioExceptionType` name when no HTTP response was received
+/// (`connectionTimeout`, `connectionError`, ...). Null otherwise.
+@override final  String? dioType;
 
 /// Create a copy of BetterError
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BetterError&&(identical(other.code, code) || other.code == code)&&(identical(other.message, message) || other.message == message)&&(identical(other.stack, stack) || other.stack == stack));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BetterError&&(identical(other.code, code) || other.code == code)&&(identical(other.message, message) || other.message == message)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.dioType, dioType) || other.dioType == dioType));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,code,message,stack);
+int get hashCode => Object.hash(runtimeType,code,message,stack,dioType);
 
 @override
 String toString() {
-  return 'BetterError(code: $code, message: $message, stack: $stack)';
+  return 'BetterError(code: $code, message: $message, stack: $stack, dioType: $dioType)';
 }
 
 
@@ -251,7 +257,7 @@ abstract mixin class _$BetterErrorCopyWith<$Res> implements $BetterErrorCopyWith
   factory _$BetterErrorCopyWith(_BetterError value, $Res Function(_BetterError) _then) = __$BetterErrorCopyWithImpl;
 @override @useResult
 $Res call({
- String code, String message, String? stack
+ String code, String message, String? stack, String? dioType
 });
 
 
@@ -268,11 +274,12 @@ class __$BetterErrorCopyWithImpl<$Res>
 
 /// Create a copy of BetterError
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? code = null,Object? message = null,Object? stack = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? code = null,Object? message = null,Object? stack = freezed,Object? dioType = freezed,}) {
   return _then(_BetterError(
 code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String,stack: freezed == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
+as String?,dioType: freezed == dioType ? _self.dioType : dioType // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

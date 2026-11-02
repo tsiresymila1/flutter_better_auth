@@ -98,6 +98,9 @@ class FlutterBetterAuth {
     dioClient.options.headers['x-skip-oauth-proxy'] = 'true';
     if (origin != null) {
       dioClient.options.headers['expo-origin'] = origin;
+      // Standard header, required by Better Auth's origin check on
+      // cookie-carrying POSTs. Browsers set Origin themselves.
+      if (!kIsWeb) dioClient.options.headers['Origin'] = origin;
     }
     cookieJar = CustomPersistCookieJar(
       store: storage,
@@ -119,6 +122,12 @@ class FlutterBetterAuth {
     dioClient.interceptors.add(RemoveNullsInterceptor());
     dioClient.interceptors.add(
       InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Stamp the auth generation so a late 401 from before a newer
+          // state change can be recognised as stale.
+          options.extra['_authGen'] = _authGen;
+          handler.next(options);
+        },
         onResponse: (response, handler) async {
           final path = response.requestOptions.path;
           final ok = (response.statusCode ?? 0) < 300; // sign-out may return 204
@@ -132,14 +141,21 @@ class FlutterBetterAuth {
             } else if (path.contains('/sign-out')) {
               await cookieJar.clearFor(Uri.parse(baseUrl));
               setBearerToken(null);
-              _authStreamController.add(null);
+              _emitUser(null);
             }
           }
           handler.next(response);
         },
         onError: (error, handler) {
-          if (error.response?.statusCode == 401) {
-            _authStreamController.add(null);
+          // A failed sign-in/sign-up (wrong password) is not a lost session.
+          final path = error.requestOptions.path;
+          final stamped = error.requestOptions.extra['_authGen'];
+          final stale = stamped is int && stamped != _authGen;
+          if (error.response?.statusCode == 401 &&
+              !stale &&
+              !path.contains('/sign-in') &&
+              !path.contains('/sign-up')) {
+            _emitUser(null);
           }
           handler.next(error);
         },
@@ -175,23 +191,61 @@ class FlutterBetterAuth {
     _connectivitySub = null;
     _wasOnline = true;
     _bearerToken = null;
+    _currentUser = null;
+    _hasUser = false;
+    _authGen = 0;
+    _refreshSeq = 0;
     _client = null;
     _initialized = false;
   }
 
   static final StreamController<User?> _authStreamController =
       StreamController<User?>.broadcast();
-  static Stream<User?> get _onAuthChange => _authStreamController.stream;
+  static User? _currentUser;
+  static bool _hasUser = false;
+
+  /// Last known user, or null when signed out / not yet resolved.
+  static User? get currentUser => _currentUser;
+
+  // Bumped on every emit so a refresh that started earlier can't overwrite a
+  // newer state (e.g. a sign-out that finished first).
+  static int _authGen = 0;
+  static int _refreshSeq = 0;
+
+  static void _emitUser(User? user) {
+    _authGen++;
+    _currentUser = user;
+    _hasUser = true;
+    _authStreamController.add(user);
+  }
+
+  /// Replays the last known value to each new listener, then forwards updates.
+  static Stream<User?> get _onAuthChange {
+    late StreamController<User?> c;
+    StreamSubscription<User?>? sub;
+    c = StreamController<User?>(
+      onListen: () {
+        if (_hasUser) c.add(_currentUser);
+        sub = _authStreamController.stream.listen(c.add);
+      },
+      onCancel: () => sub?.cancel(),
+    );
+    return c.stream;
+  }
 
   static Future<void> _refreshSession() async {
     try {
+      final gen = _authGen;
+      final seq = ++_refreshSeq;
       final result = await client.getSession();
+      // Drop the result if auth state changed, or a newer refresh started.
+      if (gen != _authGen || seq != _refreshSeq) return;
       result.maybeWhen(
         orElse: () {
-          _authStreamController.add(null);
+          _emitUser(null);
         },
         ok: (success) {
-          _authStreamController.add(success?.user);
+          _emitUser(success?.user);
         },
         err: (error) {
           // The 401 interceptor emits signed-out state. Other errors may be

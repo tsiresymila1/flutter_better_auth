@@ -1,5 +1,26 @@
 # Changelog
 
+### 0.6.6
+
+Compatibility with Better Auth servers that deviate from the reference setup, such as Convex ([#17](https://github.com/tsiresymila1/flutter_better_auth/issues/17)).
+
+**Added**
+
+- **Convex plugin** (`plugins/convex/convex_plugin.dart`): `client.convex.token()` (`GET /convex/token`) and `client.convexToken.fetchToken({forceRefreshToken})`, a cached JWT provider that refreshes shortly before expiry, shares concurrent requests, and is cleared on sign-out.
+- `FlutterBetterAuth.currentUser` getter; `onAuthChange` now replays the last known value to new listeners.
+- `BetterError.dioType`: the `DioExceptionType` name when no HTTP response was received, to tell offline/timeout from a lost session.
+- `PARSE_ERROR` error code when a successful response doesn't fit the model.
+
+**Fixed**
+
+- Dates returned as epoch milliseconds (Convex adapter) no longer break `User`/`Session` parsing.
+- The bearer token is read from the `/sign-in/*` body when the server sends no `set-auth-token` header.
+- A standard `Origin` header is sent next to `expo-origin` on non-web platforms, fixing `MISSING_OR_NULL_ORIGIN` on cookie-carrying POSTs.
+- The call adapter no longer throws on non-JSON error bodies (e.g. an HTML 502) or a missing message.
+- A 401 from `/sign-in` or `/sign-up` (wrong password) no longer emits `onAuthChange(null)`.
+- Stale 401s and older session refreshes can no longer overwrite a newer auth state (e.g. re-emitting the old user after sign-out).
+- `flutter_secure_storage` constraint widened to `>=10.3.1 <12.0.0`.
+
 ### 0.6.5
 
 **Added**
